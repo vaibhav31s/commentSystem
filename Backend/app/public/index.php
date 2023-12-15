@@ -1,27 +1,22 @@
 <?php
 
+use DI\Container;
+use DI\ContainerBuilder;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+$containerBuilder = new ContainerBuilder();
+$containerBuilder->addDefinitions(__DIR__ . '/../src/definitions.php');
+$container = $containerBuilder->build();
+
+AppFactory::setContainer($container);   
+
 $app = AppFactory::create();
 
-$app->get('/', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("Hello world!");
-    return $response;
-});
-
-$app->get('/vaibhav', function(Request $request, Response $response, $args) {
-    $response->getBody()->write("Hello Vaibhav!");
-    return $response;
-});
-
-$app -> get('/users/{id}', function(Request $request, Response $response, $args) {
-    $id = $args['id'];
-    $response->getBody()->write("Hello user $id!");
-    return $response;
-});
-
+//add routes
+include __DIR__ . '/../routes/api.php';
+include __DIR__ . '/../routes/web.php';
 $app->run();
