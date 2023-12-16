@@ -7,7 +7,6 @@ require_once __DIR__ . '/../src/config.php';
 require_once __DIR__ . '/../src/db.php';
 require_once __DIR__ . '/../middlewares/jsonBodyParser.php';
 
-
 $app->get('/', function (Request $request, Response $response, $args) {
     $response->getBody()->write("Hello world!");
     return $response->withHeader('Content-Type', 'application/json');
@@ -92,7 +91,7 @@ $app -> post('/register', function(Request $request, Response $response) {
         {
             "message": "Email already exist"
         }');
-        return $response;   
+        return $response->withHeader('Content-Type', 'application/json');   
     }
 
 
@@ -120,12 +119,13 @@ $app -> post('/register', function(Request $request, Response $response) {
         {
             "message": "User Created Successfully!"
         }');
-        return $response;
+        return $response->withHeader('Content-Type', 'application/json');
     } 
 
-
-    $response->getBody()->write(json_encode("There is problem creating user!"));
-    return $response;
+    
+     
+    $response->getBody()->write(json_encode("There is problem in creating user!"));
+    return $response->withHeader('Content-Type', 'application/json');
 }) -> add($jsonBodyParser);
 
 $app -> get('/users', function(Request $request, Response $response) {
@@ -136,5 +136,5 @@ $app -> get('/users', function(Request $request, Response $response) {
 
     $results = $queryBuilder->executeQuery()->fetchAllAssociative();
     $response->getBody()->write(json_encode($results));
-    return $response;
-}) -> add($jsonBodyParser);
+    return $response->withHeader('Content-Type', 'application/json');
+});
