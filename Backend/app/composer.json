@@ -3,6 +3,9 @@
         "slim/slim": "4.*",
         "slim/psr7": "^1.6",
         "doctrine/dbal": "^3.7",
-        "php-di/php-di": "^7.0"
+        "php-di/php-di": "^7.0",
+        "tuupola/cors-middleware": "^1.4",
+        "phpnexus/cors-psr7": "^0.2.4",
+        "slim/http": "^1.3"
     }
 }
