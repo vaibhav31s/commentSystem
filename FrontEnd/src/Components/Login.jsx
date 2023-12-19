@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import axios from "axios";
 import fit from "./loginbanner.webp";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -9,36 +10,42 @@ const Login = () => {
 
   const [data, setData] = useState(null);
 
-  if(localStorage.getItem("login") === "true"){ 
-    window.location.href = "/"
+  if (localStorage.getItem("login") === "true") {
+    window.location.href = "/";
   }
-  
+
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    const res = await axios
-      .post("http://localhost:8888/login", {
-        email,
-        password,
-      })
-      .then((res) => {
-        setData(res.data);
-        console.log(res.data);
+    const res = await toast.promise(
+      axios
+        .post("http://localhost:8888/login", {
+          email,
+          password,
+        })
 
-        // Set login credentials to local storage
-        localStorage.setItem("login"  , true )
-        localStorage.setItem("email", email);
-        localStorage.setItem("Name", res.data.Name);
-        localStorage.setItem("authroId", res.data.Id);
-        localStorage.setItem("avatar", res.data.avatar);
+        .then((res) => {
+          setData(res.data);
+          console.log(res.data);
 
-        window.location.reload();
+          // Set login credentials to local storage
+          localStorage.setItem("login", true);
+          localStorage.setItem("email", email);
+          localStorage.setItem("Name", res.data.Name);
+          localStorage.setItem("authorId", res.data.Id);
+          localStorage.setItem("avatar", res.data.avatar);
 
-
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+          //redirect to last route 
+          window.location.href = "/";
+        })
+        .catch((err) => {
+          // console.log(err);
+          toast.error(err.response.data.message);
+        }),
+      {
+        pending: "Promise is pending",
+      }
+    );
 
     //  console.log(res)
   };
@@ -132,7 +139,6 @@ const Login = () => {
       <div className="md:inline-block hidden w-4/5 mr-5 h-full  rounded-lg  ">
         <img src={fit} width="600" height="500" alt="Banner" />
       </div>
-     
     </section>
   );
 };

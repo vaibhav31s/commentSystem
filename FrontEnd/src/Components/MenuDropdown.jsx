@@ -146,7 +146,7 @@ const MenuDropdown = (props) => {
                     localStorage.setItem("login", false);
                     localStorage.removeItem("email");
                     localStorage.removeItem("Name");
-                    localStorage.removeItem("authroId");
+                    localStorage.removeItem("authorId");
                     localStorage.removeItem("avatar");
                     
                     window.location.reload();

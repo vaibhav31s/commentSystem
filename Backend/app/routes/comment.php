@@ -15,6 +15,7 @@ $app -> post('/createComment', function(Request $request, Response $response) {
     $authorId = $data['authorId'];
     $blogId = $data['blogId'];
     $comment = $data['comment'];
+    $name = $data['authorName'];
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     $date = date("Y-m-d H:i:s");
     $queryBuilder -> insert('Comment')
@@ -24,12 +25,14 @@ $app -> post('/createComment', function(Request $request, Response $response) {
             'blogId' => '?',
             'comment' => '?',
             'timestamp' => '?',
+            'authorName' => '?',
         ]
     )
     -> setParameter(0, $authorId)
     -> setParameter(1, $blogId)
     -> setParameter(2, $comment)
-    -> setParameter(3, $date);
+    -> setParameter(3, $date)
+    ->setParameter(4, $name);
     
     $results = $queryBuilder->executeStatement();
     if($results) {
@@ -42,3 +45,17 @@ $app -> post('/createComment', function(Request $request, Response $response) {
     $response->getBody()->write(json_encode("There is problem in creating comment!"));
     return $response->withHeader('Content-Type', 'application/json');
 }) -> add($jsonBodyParser);
+
+$app -> get('/blog/{id}/comments', function(Request $request, Response $response, array $args) {
+    $id = $args['id'];
+  
+    $queryBuilder = $this->get('DB')->getQueryBuilder();
+    $queryBuilder -> select('*')
+    -> from('Comment')
+    -> where('blogId = ?')
+    -> setParameter(1, $id);
+    
+    $results = $queryBuilder->executeQuery()->fetchAllAssociative();
+    $response->getBody()->write(json_encode($results));
+    return $response->withHeader('Content-Type', 'application/json');
+});

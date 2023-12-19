@@ -32,3 +32,5 @@ include __DIR__ . '/blog.php';
 //comments api routes
 include __DIR__ . '/comment.php';
 
+//replies api routes
+include __DIR__ . '/reply.php';

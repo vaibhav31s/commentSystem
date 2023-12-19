@@ -48,20 +48,39 @@ html {
 
 .content h2:nth-child(1) {
   color: transparent;
-  -webkit-text-stroke: 2px #8338ec;
+  -webkit-text-stroke: 2px #000000;
 }
 
 .content h2:nth-child(2) {
-  color: #c19bf5;
+  color: #000000;
   animation: animate 4s ease-in-out infinite;
 }
 
+.content h1 {
+	color: #fff;
+	font-size: 2em;
+	position: absolute;
+  	transform: translateY(-100%);
+}
+
+.content h1:nth-child(1) {  
+  color: transparent;
+  -webkit-text-stroke: 2px #020202;
+}
+
+.content h1:nth-child(2) {
+  color: #010008;
+  animation: animate 4s ease-in-out infinite;
+}
 @media (max-width: 1024px) {
   body {
     /* background: #000; */
   }
   .content h2 {
     font-size: 6em;
+  }
+  .content h1 {
+    font-size: 2em;
   }
 }
 
@@ -72,6 +91,9 @@ html {
   .content h2 {
     font-size: 3em;
   }
+  .content h1 {
+    font-size: 2em;
+  } 
 }
 
 @media (max-width: 552px) {
@@ -80,6 +102,9 @@ html {
   }
   .content h2 {
     font-size: 2em;
+  }
+  .content h1 {
+    font-size: 1em;
   }
 }
 
@@ -190,11 +215,11 @@ html {
 
 .content h2:nth-child(1) {
   color: transparent;
-  -webkit-text-stroke: 2px #8338ec;
+  -webkit-text-stroke: 2px #111111;
 }
 
 .content h2:nth-child(2) {
-  color: #c19bf5;
+  color: #000000;
   animation: animate 4s ease-in-out infinite;
 }
 

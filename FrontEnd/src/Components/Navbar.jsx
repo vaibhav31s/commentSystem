@@ -6,22 +6,21 @@ const Navbar = () => {
   const isLogin = localStorage.getItem("login");
   const email = localStorage.getItem("email");
   const Name = localStorage.getItem("Name");
-  const authroId = localStorage.getItem("authroId");
+  const authorId = localStorage.getItem("authorId");
   const avatar = localStorage.getItem("avatar");
 
   var data = {
     user: {
       email,
       Name,
-      authroId,
+      authorId,
       avatar
     },
   };
  
   if(isLogin === "false"){
-    data = null
+    data = null;
   }
-  
   return (
    
 
@@ -31,12 +30,17 @@ const Navbar = () => {
         rounded={true}
         className="bg-white px-2 sm:px-4 py-2.5 dark:bg-gray-900 w-full z-20 border-b border-gray-200 dark:border-gray-600"
       >
-        <div className="container flex flex-wrap items-center justify-between mx-auto">
-          <a href="/" className="flex items-center cursor-pointer">
-            <img className="h-10  mr-3 sm:h-" alt="Logo" src={Logo}/>
-            <span className="self-center text-3xl font-semibold whitespace-nowrap dark:text-white">
+        <div className="container flex flex-wrap items-center justify-between mx-auto ">
+          <a href="/" className="flex items-center">
+        <div className="mr-auto place-self-center  content pt-5">
+            <h1 className="   font-extrabold tracking-tight leading-none  dark:text-white">
               ChatSystem
-            </span>
+            </h1>
+            <h1 className="  font-extrabold tracking-tight leading-none  dark:text-white">
+              ChatSystem
+            </h1>
+            
+          </div>
           </a>
 
           <div className="flex gap-2">

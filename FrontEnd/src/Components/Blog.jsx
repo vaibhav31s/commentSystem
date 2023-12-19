@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useSearchParams } from "react";
 import { TextToSpeech, useTts } from "tts-react";
 // import Comments from "components/Comments";
+import Comments from "./Comment";
 import { useParams } from 'react-router-dom';
 import { BsBookmarkCheckFill, BsBookmarkDash } from "react-icons/bs";
+import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 const Blogs = (props) => {
     const { id } = useParams();
     // const id = router
@@ -37,7 +39,7 @@ const Blogs = (props) => {
       </div>
       <div className="flex flex-col flex-grow max-w-6xl mx-auto p-4">
         <div className="mt-20 flex flex-row items-center cursor-pointer">
-          {/* <ChevronLeftIcon className="h-4 w-4 text-blue-500 dark:text-white" /> */}
+          <ChevronLeftIcon className="h-4 w-4 text-blue-500 dark:text-white" />
           <div
             // onClick={() => router.back()}
             className="ml-2 text-md font-bold text-blue-500 dark:text-white"
@@ -173,7 +175,7 @@ const Blogs = (props) => {
             </div>
           )}
         </div>
-        {/* <Comments blog={blog} /> */}
+        <Comments blogs={blog} />
       </div>
     </div>
   );
