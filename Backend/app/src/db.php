@@ -19,6 +19,5 @@ class DB {
         return $this->qb;
     }
     
-
     
 }

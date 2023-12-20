@@ -34,3 +34,6 @@ include __DIR__ . '/comment.php';
 
 //replies api routes
 include __DIR__ . '/reply.php';
+
+//votes api routes
+include __DIR__ . '/votes.php';

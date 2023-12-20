@@ -12,6 +12,7 @@ const Card = ({blog} ) => {
   const [blogDelete, setBlogDelete] = useState(false);
 
   const [userEmail, setuserEmail] = useState("");
+  // const [edit]
 
  
   return (
