@@ -7,18 +7,14 @@ import {
 } from "react-icons/bi";
 import { toast } from "react-toastify";
 
-const Card = ({ blog, level }) => {
+const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop}) => {
+
   const authorId = localStorage.getItem("authorId");
-
   const fromBookmarked = true;
-
   const [fromOwnBlog, setFromOwnBlog] = useState(authorId == blog.authorId);
-
   const [isBookmarked, setIsBookmarked] = useState(true);
-
   const [blogDelete, setBlogDelete] = useState(false);
-  const [upvote, setUpvote] = useState(false);
-  const [downvote, setDownvote] = useState(false);
+
   const [userEmail, setuserEmail] = useState("");
   const [votes, setVotes] = useState(blog?.upvote || 0);
   const [canReply, setCanReply] = useState(
@@ -29,117 +25,110 @@ const Card = ({ blog, level }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem("login") == "true"
   );
-
   const [curTime, setCurTime] = useState(new Date().toLocaleString());
   const [curTimeDiff, setCurTimeDiff] = useState(0);
-
-  useEffect(() => {
-    setCurTime(new Date().toLocaleString());
-  }, []);
-
   const [editComment, setEditComment] = useState(false);
-
-  // {
-  //   id: 1,
-  //   comment: "this is comment1",
-  //   authorName: "Vaibhav Gawad",
-  //   timestamp: "2023-12-18 01:00:00",
-  //   upvote: 10,
-  // },
-
   const [comments, setComments] = useState(blog);
-
   const [isOpen, setIsOpen] = useState(false);
+  let myVotedState="";
+  const isMyVote = myvotes.some(item =>{ if(item.replyId === comments.mainReplyId) {
+    myVotedState = item.voteType;
+    
 
+    return true;
+  }});
+
+  const [upvote, setUpvote] = useState(myVotedState === "up");
+  const [downvote, setDownvote] = useState(myVotedState === "down");
   const submitComment = async () => {
     if (commentText.length <= 10) {
-      toast.error("Reply should be atleast 10 characters long");
+      toast.error("Reply should be at least 10 characters long");
+     
       return;
     }
-    const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
-    await fetch(`http://localhost:8888/create/reply`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    if(totalRepliesAtTop == 50) {
+      setCanReply(false);
+    }
+    if(totalRepliesAtTop >= 50) {
+      toast.error("Maximum 50 replies allowed");
+      return;
+    }
+    try {
+      const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
+  
+      const response = await fetch("http://localhost:8888/create/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reply: commentText,
+          replyId: comments.mainReplyId,
+          authorId: authorId,
+          blogId: comments.blogId,
+          timestamp: timestamp,
+          authorName: localStorage.getItem("Name"),
+         
+        }),
+      });
+  
+      const data = await response.json();
+  
+      const lastKeyResponse = await fetch("http://localhost:8888/reply/getlastkey", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          blogId: comments.blogId,
+          timestamp: timestamp,
+          authorId: authorId,
+        }),
+      });
+  
+      const lastKeyData = await lastKeyResponse.json();
+  
+      toast.success("Reply posted");
+  
+      comments.replies.push({
         reply: commentText,
-        replyId: comments.mainReplyId,
         authorId: authorId,
         blogId: comments.blogId,
         timestamp: timestamp,
         authorName: localStorage.getItem("Name"),
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const lastKey = fetch(`http://localhost:8888/reply/getlastkey`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            blogId: comments.blogId,
-            timestamp: timestamp,
-            authorId: authorId,
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            toast.success("Reply posted");
-            comments.replies.push({
-              reply: commentText,
-              authorId: authorId,
-              blogId: comments.blogId,
-              timestamp: timestamp,
-              authorName: localStorage.getItem("Name"),
-              replies: [],
-              mainReplyId: data[0].id,
-            });
-            setComments(comments);
-            setCommentText("");
-            return data[0].id;
-          })
-          .catch((err) => {
-            // console.log(err);
-            toast.error("Something went wrong");
-            return;
-          });
-      })
-      .catch((err) => {
-        // console.log(err);
-        toast.error("Something went wrong");
-        return;
+        replies: [],
+        mainReplyId: lastKeyData[0].id,
+        votes: { upvotes: 0, downvotes: 0 },
       });
-
-    setIsOpen(false);
-    setShowReply(true);
+  
+      setComments(comments);
+      setCommentText("");
+      setIsOpen(false);
+      setShowReply(true);
+      setTotalRepliesAtTop(totalRepliesAtTop + 1);
+    } catch (err) {
+      toast.error("Something went wrong");
+    }
   };
-
-  const deleteBlog = async () => {
-    await fetch(`http://localhost:8888/reply/delete`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        replyId: comments.mainReplyId,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        toast.success("Blog deleted");
-        blog.reply = "This reply has been deleted";
-
-        setBlogDelete(true);
-      })
-      .catch((err) => {
-        toast.error("Something went wrong");
-        return;
+  
+  const deleteReply = async () => {
+    try {
+      const response = await fetch("http://localhost:8888/reply/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ replyId: comments.mainReplyId }),
       });
+  
+      const data = await response.json();
+      toast.success("Reply deleted");
+      blog.reply = "This reply has been deleted";
+      setBlogDelete(true);
+    } catch (err) {
+      toast.error("Something went wrong");
+    }
   };
+  
+ 
 
   useEffect(() => {
+    setVotes((comments?.votes.upvotes - comments?.votes?.downvotes));
+    setCurTime(new Date().toLocaleString());
     if (localStorage.getItem("login") == "true") {
       setuserEmail(localStorage.getItem("Email"));
     }
@@ -150,59 +139,90 @@ const Card = ({ blog, level }) => {
       )
     );
   }, []);
-  if (level == 6) {
-    return <div></div>;
-  }
 
   const changeComment = async () => {
     setIsOpen(false);
     if (commentText.length <= 10) {
-      toast.error("Reply should be atleast 10 characters long");
+      toast.error("Reply should be at least 10 characters long");
       return;
     }
-    await fetch(`http://localhost:8888/reply/edit`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        replyId: comments.mainReplyId,
-        reply: commentText,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        toast.success("Reply edited");
-        blog.reply = commentText;
-        setEditComment(false);
-      })
-      .catch((err) => {
-        toast.error("Something went wrong");
-        return;
+  
+    try {
+      const response = await fetch("http://localhost:8888/reply/edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ replyId: comments.mainReplyId, reply: commentText }),
       });
+  
+      const data = await response.json();
+      toast.success("Reply edited");
+      blog.reply = commentText;
+      setEditComment(false);
+    } catch (err) {
+      toast.error("Something went wrong");
+    }
   };
+  
+
   const timeDif = (date2, date1) => {
     const diffTimeInMilliseconds = Math.abs(date2 - date1);
     const diffTimeInMinutes = diffTimeInMilliseconds / (1000 * 60); // converting milliseconds to minutes
     return diffTimeInMinutes;
   };
 
+
+  if (level == 6) {
+    return <div></div>;
+  }
+
+
+
   return (
     <div>
       <article className="p-3 md:p-6 cursor-pointer bg-white rounded-lg border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 md:min-w-[450px]">
         <div className="flex flex-row gap-4">
+          {/* vote  */}
+          {/* {isMyVote && (
+          <h1>This is my voted blog and i voted {myVotedState}</h1>
+          )  
+          } */}
+          
+          {
+            // <h1>{ totalRepliesAtTop }</h1>
+            // <h1> {÷}</h1>
+          }
           <div className="flex flex-col gap-2 items-center justify-center justify-items-center">
             {upvote ? (
               <BiSolidUpvote
                 className="w-5 h-5 text-gray-400 dark:text-gray-300"
                 onClick={() => {
                   setUpvote(false);
+                  fetch("http://localhost:8888/vote/delete", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      replyId: comments.mainReplyId,
+                      authorId: authorId,
+                    }),
+                  });
+
                   setVotes(votes - 1);
                 }}
               />
             ) : (
               <BiUpvote
                 onClick={() => {
+                  fetch("http://localhost:8888/reply/votes", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      replyId: comments.mainReplyId,
+                      authorId: authorId,
+                      voteType: "up",
+                      blogId: comments.blogId,
+                    }),
+                  });
+
                   setUpvote(true);
                   setVotes(votes + 1);
                 }}
@@ -215,14 +235,38 @@ const Card = ({ blog, level }) => {
               <BiSolidDownvote
                 className="w-5 h-5 text-gray-400 dark:text-gray-300"
                 onClick={() => {
-                  setDownvote(false);
-                  setVotes(votes + 1);
-                }}
+                  fetch("http://localhost:8888/vote/delete", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      replyId: comments.mainReplyId,
+                      authorId: authorId,
+                    }),
+                  }).then((res) => {
+                    setDownvote(false);
+                    setVotes(votes + 1);
+                  }).then((res) => {
+                    setDownvote(false);
+                  }).catch((err) => {
+                    toast.error("Something went wrong");
+                  });
+                } }
               />
             ) : (
               <BiDownvote
                 className="w-5 h-5 text-gray-400 dark:text-gray-300"
                 onClick={() => {
+                  fetch("http://localhost:8888/reply/votes", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      replyId: comments.mainReplyId,
+                      authorId: authorId,
+                      voteType: "down",
+                      blogId: comments.blogId,
+                    }),
+                  });
+
                   setDownvote(true);
                   setVotes(votes - 1);
                 }}
@@ -276,12 +320,12 @@ const Card = ({ blog, level }) => {
                 {comments.replyId === null ? (
                   <h1 className="p-2 border border-r-2 rounded-lg">
                     {" "}
-                    Total Replies : {comments.replyCount}{" "}
+                    Total Replies : {totalRepliesAtTop}{" "}
                   </h1>
                 ) : (
                   <> </>
                 )}
-                {isLoggedIn &&
+                {totalRepliesAtTop < 50 &&  isLoggedIn &&
                   (level == 5 ? (
                     <></>
                   ) : isOpen ? (
@@ -330,7 +374,7 @@ const Card = ({ blog, level }) => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      deleteBlog();
+                      deleteReply();
                     }}
                     id="theme-toggle"
                     type="button"
@@ -414,8 +458,8 @@ const Card = ({ blog, level }) => {
             <article
               key={id}
               className={`pl-10 pt-2 text-base  border-l-2 dark:border-gray-700 dark:bg-gray-900`}
-            >
-              <Card blog={comment} level={level + 1} />
+            > 
+              <Card blog={comment} level={level + 1} myvotes={myvotes} totalRepliesAtTop={totalRepliesAtTop} setTotalRepliesAtTop={setTotalRepliesAtTop}/>
             </article>
           );
         })}

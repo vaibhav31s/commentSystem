@@ -11,8 +11,14 @@ const Comment = (blogs) => {
   const bid = blogs.id;
   const authorId = localStorage.getItem("authorId");
   const [totalReplies, setTotalReplies] = useState(0);
+  const [myVotes, setMyVotes] = useState([]);
+  const [totalRepliesAtTop, setTotalRepliesAtTop] = useState([]);
+
+
   
   const [blog, setBlog] = useState(null);
+
+
   const getComment = async () => {
     if (blogs.id) {
       const response = await fetch(`http://localhost:8888/replies/${bid}`, {
@@ -31,9 +37,6 @@ const Comment = (blogs) => {
         });
     }
   };
-
-  // const submitComment
-
   useEffect(() => {
     //    if()
     // console.log("useEffect", blogs.id);
@@ -91,24 +94,78 @@ const Comment = (blogs) => {
               timestamp: timestamp,
               authorName: localStorage.getItem("Name"),
               replies: [],
+              votes: { upvotes: 0, downvotes: 0 },
             });
             setComments(comments);
             setComment("");
             toast.success("Comment posted");
+            
+            totalRepliesAtTop.push(0);
+            setTotalRepliesAtTop(totalRepliesAtTop);
             return data;
           });
       })
       .catch((err) => {
-        // console.log(err);
+        
         toast.error("Something went wrong");
       });
   };
+
+
+  const getVotes = async () => {
+    if (blogs.id) {
+      const response = await fetch(`http://localhost:8888/myvotes/blogid`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          blogId: blogs.id,
+          authorId: localStorage.getItem("authorId"),
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          
+          setMyVotes(data);
+      
+        })
+        .catch((err) => {
+          toast.error("Something went wrong");
+        });
+    }
+  };
+
+
+  useEffect(() => {
+  getVotes  ();
+  },[]);
+
+
+
+
+  useEffect(() => {
+    // Initialize totalRepliesAtTop based on the length of comments
+    if (comments && Array.isArray(comments)) {
+      setTotalRepliesAtTop(Array.from({ length: comments.length }, () => 0));
+      comments.map((comment, id) => {
+        if (comment.replies && Array.isArray(comment.replies)) {
+          setTotalRepliesAtTop((prev) => {
+            const newState = [...prev];
+            newState[id] = comment.replyCount;
+            return newState;
+          });
+        }
+      });
+    }
+  }, [comments]);
   // const [totalReplies]
   return (
     <section className="w-full bg-white dark:bg-gray-900 py-8 lg:py-16">
       <div className=" mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">
+            {totalReplies.length}
             Discussion ({comments?.length})
           </h2>
         </div>
@@ -152,13 +209,21 @@ const Comment = (blogs) => {
           Array.isArray(comments) &&
           comments.map((comment, id) => {
             let avatar = comment?.text?.split(" ")[0];
-            
+              let totalrrr= comment.replyCount;
             return (
               <article
                 key={id}
                 className="p-2 text-base bg-white  border-gray-200 dark:border-gray-700 dark:bg-gray-900"
               >
-                <Card blog={comment} level={0} />
+                <Card blog={comment} level={0} myvotes={myVotes} totalRepliesAtTop={totalRepliesAtTop[id]}
+                setTotalRepliesAtTop={(newTotalReplies) => {
+                  // Update the state with the newTotalReplies for the current comment
+                  setTotalRepliesAtTop((prev) => {
+                    const newState = [...prev];
+                    newState[id] = newTotalReplies;
+                    return newState;
+                  });
+                }}/>
               </article>
             );
           })}
