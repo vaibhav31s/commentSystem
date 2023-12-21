@@ -50,10 +50,13 @@ RUN      php -r "if (hash_file('sha384', 'composer-setup.php') === 'e21205b207c3
 RUN       php composer-setup.php
 RUN     php -r "unlink('composer-setup.php');"
 
-WORKDIR /app
+
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-COPY ./app /app
+WORKDIR /app
+RUN composer install --no-scripts --no-autoloader
+COPY . .
 
+RUN composer dump-autoload --optimize
 CMD ["php-fpm"]
