@@ -15,7 +15,7 @@ services:
             context: ./Backend
             dockerfile: PHP.Dockerfile
         volumes:
-            - ./Backend/app:/app:vaibhav
+            - ./Backend/app:/app  # Corrected volume syntax
         depends_on:
             - mysql
         restart: always
@@ -27,10 +27,8 @@ services:
             MYSQL_PASSWORD: 'password'
             MYSQL_DATABASE: 'slimphp'
         volumes:
-            - slimphp:/var/lib/mysql
+            - slimphp:/var/lib/mysql  # Corrected volume syntax
         ports:
             - "3325:3306"
         restart: always
-volumes:
-   slimphp: {}
-        
+
