@@ -9,6 +9,5 @@ RUN apt-get update --fix-missing && \
 
 FROM nginx
 RUN rm -rf /var/www/html/*
-COPY --from=user_builder /app/build .
+COPY --from=user_builder /app/build /var/www/html
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY build/ /var/www/html
