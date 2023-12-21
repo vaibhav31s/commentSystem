@@ -1,11 +1,13 @@
 version: '3'
 services:
     web:
+        build:
+            context: Backend
+            dockerfile: nginx.Dockerfile
         image: nginx:1.25.2-alpine3.18
         ports:
-           - "8080:80"
+           - "8888:80"
         volumes:
-            - ./Backend/conf.d:/etc/nginx/conf.d
             - ./Backend/app:/app
         depends_on:
             - php
@@ -33,4 +35,4 @@ services:
         restart: always
 
 volumes:
-   slimphp: {}
+   slimphp: 
