@@ -35,4 +35,4 @@ services:
         restart: always
     
 volumes:
-   slimphp: {}
+   slimphp: 
