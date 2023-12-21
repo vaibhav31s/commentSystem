@@ -11,10 +11,7 @@ services:
             - php
         restart: always
     frontend:
-        build:
-            context: FrontEnd
-            dockerfile: Dockerfile
-        image: nginx-frontend
+        image: vaibhavgawad/codechef-frontend:latest
         ports:
             - "8081:80"
     php:
