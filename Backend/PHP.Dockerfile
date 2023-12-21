@@ -1,6 +1,6 @@
 FROM php:8.1.23-fpm-bookworm
-
-RUN apt-get update
+USER root
+RUN apt-get update && apt-get install -y openssh-server
 
 RUN apt-get install -y --no-install-recommends \
         libfreetype6-dev \
@@ -46,7 +46,6 @@ RUN      php -r "if (hash_file('sha384', 'composer-setup.php') === 'e21205b207c3
 RUN       php composer-setup.php
 RUN     php -r "unlink('composer-setup.php');"
 
-USER root
 
 
 CMD ["php-fpm"]
