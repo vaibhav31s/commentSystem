@@ -1,0 +1,12 @@
+language: php
+
+php:
+  - 7.4
+  - 8.1
+
+install: travis_retry composer install --no-interaction
+
+branches:
+  only:
+    - master
+    - /^release\/.*$/
