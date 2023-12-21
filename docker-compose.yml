@@ -14,10 +14,10 @@ services:
         restart: always
     php:
         build:
-            context: ./Backend
+            context: Backend
             dockerfile: PHP.Dockerfile
         volumes:
-            - ./Backend/app:/app  # Corrected volume syntax
+            - ./Backend/app:/app
         depends_on:
             - mysql
         restart: always
