@@ -58,7 +58,7 @@ function countNestedReplies($nestedResults){
     return $count;
 }
 
-$app -> get('/replies/{id}', function (Request $request, Response $response, $args) {
+$app -> get('/api/replies/{id}', function (Request $request, Response $response, $args) {
     $id = $args['id'];
   
     $queryBuilder = $this->get('DB')->getQueryBuilder();
@@ -88,7 +88,7 @@ $app -> get('/replies/{id}', function (Request $request, Response $response, $ar
 
 });
 
-$app -> post('/create/reply', function (Request $request, Response $response, $args) {
+$app -> post('/api/create/reply', function (Request $request, Response $response, $args) {
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $reply = $body['reply'];
@@ -127,7 +127,7 @@ $app -> post('/create/reply', function (Request $request, Response $response, $a
 
 });
 
-$app->post('/reply/getlastkey', function (Request $request, Response $response) {
+$app->post('/api/reply/getlastkey', function (Request $request, Response $response) {
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $blogId = $body['blogId'];
@@ -151,7 +151,7 @@ $app->post('/reply/getlastkey', function (Request $request, Response $response) 
 });
 
 
-$app->post('/reply/delete', function (Request $request, Response $response) {
+$app->post('/api/reply/delete', function (Request $request, Response $response) {
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $replyId = $body['replyId'];
@@ -171,7 +171,7 @@ $app->post('/reply/delete', function (Request $request, Response $response) {
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-$app->post('/reply/edit', function (Request $request, Response $response) {
+$app->post('/api/reply/edit', function (Request $request, Response $response) {
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $replyId = $body['replyId'];

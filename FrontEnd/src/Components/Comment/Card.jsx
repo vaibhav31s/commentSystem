@@ -56,7 +56,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop}) 
     try {
       const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
   
-      const response = await fetch("http://localhost:8888/create/reply", {
+      const response = await fetch("/api/create/reply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -72,7 +72,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop}) 
   
       const data = await response.json();
   
-      const lastKeyResponse = await fetch("http://localhost:8888/reply/getlastkey", {
+      const lastKeyResponse = await fetch("/api/reply/getlastkey", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -109,7 +109,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop}) 
   
   const deleteReply = async () => {
     try {
-      const response = await fetch("http://localhost:8888/reply/delete", {
+      const response = await fetch("/api/reply/delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ replyId: comments.mainReplyId }),
@@ -148,7 +148,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop}) 
     }
   
     try {
-      const response = await fetch("http://localhost:8888/reply/edit", {
+      const response = await fetch("/api/reply/edit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ replyId: comments.mainReplyId, reply: commentText }),
@@ -197,22 +197,26 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop}) 
                 className="w-5 h-5 text-gray-400 dark:text-gray-300"
                 onClick={() => {
                   setUpvote(false);
-                  fetch("http://localhost:8888/vote/delete", {
+                  fetch("/api/vote/delete", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                       replyId: comments.mainReplyId,
                       authorId: authorId,
                     }),
+                  }).then((res) => {
+                    setUpvote(false);
+                    setVotes(votes - 1);
+                  }
+                  ).catch((err) => {
+                    toast.error("Something went wrong");
                   });
-
-                  setVotes(votes - 1);
                 }}
               />
             ) : (
               <BiUpvote
                 onClick={() => {
-                  fetch("http://localhost:8888/reply/votes", {
+                  fetch("/api/reply/votes", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -221,10 +225,18 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop}) 
                       voteType: "up",
                       blogId: comments.blogId,
                     }),
+                  }).then((res) => {
+                    setUpvote(true);
+                    if(downvote) {
+                      setDownvote(false);
+                      setVotes(votes + 2);
+                    } else {
+                    setVotes(votes + 1);
+                    }
+                  }
+                  ).catch((err) => {
+                    toast.error("Something went wrong");
                   });
-
-                  setUpvote(true);
-                  setVotes(votes + 1);
                 }}
                 className="w-5 h-5 text-gray-400 dark:text-gray-300"
               />
@@ -235,7 +247,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop}) 
               <BiSolidDownvote
                 className="w-5 h-5 text-gray-400 dark:text-gray-300"
                 onClick={() => {
-                  fetch("http://localhost:8888/vote/delete", {
+                  fetch("/api/vote/delete", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -244,6 +256,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop}) 
                     }),
                   }).then((res) => {
                     setDownvote(false);
+                    
                     setVotes(votes + 1);
                   }).then((res) => {
                     setDownvote(false);
@@ -256,7 +269,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop}) 
               <BiDownvote
                 className="w-5 h-5 text-gray-400 dark:text-gray-300"
                 onClick={() => {
-                  fetch("http://localhost:8888/reply/votes", {
+                  fetch("/api/reply/votes", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -266,9 +279,13 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop}) 
                       blogId: comments.blogId,
                     }),
                   });
-
                   setDownvote(true);
+                  if(upvote) {
+                    setUpvote(false);
+                    setVotes(votes - 2);
+                  } else {
                   setVotes(votes - 1);
+                  }
                 }}
               />
             )}
@@ -295,7 +312,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop}) 
                 <span className="text-xl  font-sans text-gray-500 dark:text-gray-400">
                   {blog && blog.reply && blog.reply}
                 </span>
-                {curTimeDiff < 5 && (
+                {curTimeDiff < 5 && (comments.authorId === authorId) &&(
                   <button
                     onClick={() => {
                       setEditComment(true);

@@ -7,17 +7,17 @@ require_once __DIR__ . '/../src/config.php';
 require_once __DIR__ . '/../src/db.php';
 require_once __DIR__ . '/../middlewares/jsonBodyParser.php';
 
-$app->get('/', function (Request $request, Response $response, $args) {
+$app->get('/api/', function (Request $request, Response $response, $args) {
     $response->getBody()->write("Hello world!");
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-$app->get('/vaibhav', function(Request $request, Response $response, $args) {
+$app->get('/api/vaibhav', function(Request $request, Response $response, $args) {
     $response->getBody()->write("Hello Vaibhav!");
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-$app -> get('/users/{id}', function(Request $request, Response $response, $args) {
+$app -> get('/api/users/{id}', function(Request $request, Response $response, $args) {
     $id = $args['id'];
     $response->getBody()->write("Hello user $id!");
     return $response->withHeader('Content-Type', 'application/json');

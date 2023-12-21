@@ -7,7 +7,7 @@ require_once __DIR__ . '/../src/config.php';
 require_once __DIR__ . '/../src/db.php';
 require_once __DIR__ . '/../middlewares/jsonBodyParser.php';
 
-$app -> post('/reply/votes', function (Request $request, Response $response, $args) {
+$app -> post('/api/reply/votes', function (Request $request, Response $response, $args) {
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $replyId = $body['replyId'];
@@ -86,7 +86,7 @@ $app -> post('/reply/votes', function (Request $request, Response $response, $ar
 
 });
 
-$app->get('/reply/{id}/votes', function (Request $request, Response $response, $args) {
+$app->get('/api/reply/{id}/votes', function (Request $request, Response $response, $args) {
     $id = $args['id'];
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     //upvotes and downvotes
@@ -111,7 +111,7 @@ $app->get('/reply/{id}/votes', function (Request $request, Response $response, $
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-$app->post('/vote/delete', function (Request $request, Response $response, $args) {
+$app->post('/api/vote/delete', function (Request $request, Response $response, $args) {
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $replyId = $body['replyId'];
@@ -139,7 +139,7 @@ $app->post('/vote/delete', function (Request $request, Response $response, $args
     }
 });
 
-$app->post('/myvotes/blogid', function (Request $request, Response $response, $args) {
+$app->post('/api/myvotes/blogid', function (Request $request, Response $response, $args) {
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $blogId = $body['blogId'];

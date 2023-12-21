@@ -9,7 +9,7 @@ require_once __DIR__ . '/../src/db.php';
 require_once __DIR__ . '/../middlewares/jsonBodyParser.php';
 
 
-$app -> post('/createComment', function(Request $request, Response $response) {
+$app -> post('/api/createComment', function(Request $request, Response $response) {
     $jsonBody = $request->getBody();
     $data = json_decode($jsonBody, true);
     $authorId = $data['authorId'];
@@ -46,7 +46,7 @@ $app -> post('/createComment', function(Request $request, Response $response) {
     return $response->withHeader('Content-Type', 'application/json');
 }) -> add($jsonBodyParser);
 
-$app -> get('/blog/{id}/comments', function(Request $request, Response $response, array $args) {
+$app -> get('/api/blog/{id}/comments', function(Request $request, Response $response, array $args) {
     $id = $args['id'];
   
     $queryBuilder = $this->get('DB')->getQueryBuilder();

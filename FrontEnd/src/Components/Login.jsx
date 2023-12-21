@@ -19,7 +19,7 @@ const Login = () => {
 
     const res = await toast.promise(
       axios
-        .post("http://localhost:8888/login", {
+        .post("/api/login", {
           email,
           password,
         })

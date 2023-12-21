@@ -6,7 +6,7 @@ const PostLists = () => {
   const [posts, setPosts] = useState([]);
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await fetch("http://localhost:8888/blogs");
+      const response = await fetch("/api/blogs");
       const data = await response.json();
       setPosts(data);
     };
