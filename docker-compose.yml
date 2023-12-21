@@ -32,3 +32,5 @@ services:
             - "3325:3306"
         restart: always
 
+volumes:
+   slimphp:
