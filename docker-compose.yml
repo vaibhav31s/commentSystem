@@ -3,7 +3,7 @@ services:
     web:
         image: nginx:1.25.2-alpine3.18
         ports:
-            - "8888:80"
+           - "8080:80"
         volumes:
             - ./Backend/conf.d:/etc/nginx/conf.d
             - ./Backend/app:/app
