@@ -21,7 +21,7 @@ const Comment = (blogs) => {
 
   const getComment = async () => {
     if (blogs.id) {
-      const response = await fetch(`/api/replies/${bid}`, {
+      const response = await fetch(`http://localhost:8888/replies/${bid}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -56,7 +56,7 @@ const Comment = (blogs) => {
     const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
    
 
-    await fetch(`/api/create/reply`, {
+    await fetch(`http://localhost:8888/create/reply`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -73,7 +73,7 @@ const Comment = (blogs) => {
       .then((res) => res.json())
       .then((data1) => {
         // console.log(data);
-        const lastKey = fetch(`/api/reply/getlastkey`, {
+        const lastKey = fetch(`http://localhost:8888/reply/getlastkey`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -114,7 +114,7 @@ const Comment = (blogs) => {
 
   const getVotes = async () => {
     if (blogs.id) {
-      const response = await fetch(`/api/myvotes/blogid`, {
+      const response = await fetch(`http://localhost:8888/myvotes/blogid`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

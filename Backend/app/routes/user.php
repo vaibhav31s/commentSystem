@@ -10,7 +10,7 @@ require_once __DIR__ . '/../middlewares/jsonBodyParser.php';
 
 
 
-$app->post('/api/login', function (Request $request, Response $response, $args) {
+$app->post('/login', function (Request $request, Response $response, $args) {
     $jsonBody = $request->getBody();
     $data = json_decode($jsonBody, true);
     $email = $data['email'];
@@ -58,7 +58,7 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
 });
 
 
-$app->post('/api/register', function (Request $request, Response $response) {
+$app->post('/register', function (Request $request, Response $response) {
     $jsonBody = $request->getBody();
     $data = json_decode($jsonBody, true);
     $name = $data['name'];
@@ -122,7 +122,7 @@ $app->post('/api/register', function (Request $request, Response $response) {
     return $response->withHeader('Content-Type', 'application/json');
 })->add($jsonBodyParser);
 
-$app->get('/api/users', function (Request $request, Response $response) {
+$app->get('/users', function (Request $request, Response $response) {
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     $queryBuilder->select('*')
         ->from('Users');
@@ -131,40 +131,4 @@ $app->get('/api/users', function (Request $request, Response $response) {
     $results = $queryBuilder->executeQuery()->fetchAllAssociative();
     $response->getBody()->write(json_encode($results));
     return $response->withHeader('Content-Type', 'application/json');
-});
-
-//checks if user is moderator if total up votes on his comments gets more than 10 (also not considering his own votes)
-$app->get('/api/moderatorcheck/{id}', function (Request $request, Response $response, $args) {
-    $id = $args['id'];
-    $queryBuilder = $this->get('DB')->getQueryBuilder();
-    // $queryBuilder-> select('COUNT(*) as totalUpVotes') 
-    // ->from('Vote')
-    // ->where('authorId = ?')
-    // ->andWhere('voteType = ?')
-    // ->setParameter(0, $id)
-    // ->setParameter(1, 'up');
-
-    $queryBuilder->select('COUNT(*) as totalUpVotes')
-        ->from('Vote', 'v')
-        ->distinct()
-        ->innerJoin('v', 'Replies', 'r', 'v.replyId = r.Id')
-        ->where('r.authorId = ?')
-        ->andWhere('v.voteType = ?')
-        ->andWhere('v.authorId <> r.authorId') // Exclude the author's own votes
-        ->setParameter(0, $id)
-        ->setParameter(1, 'up');
-
-
-    $results = $queryBuilder->executeQuery()->fetchAllAssociative();
-    $totalUpVotes = $results[0]['totalUpVotes'];
-
-    if($totalUpVotes >= 10) {
-        
-        $response->getBody()->write(json_encode(["isModerator" => true]));
-        return $response->withHeader('Content-Type', 'application/json');
-    } else {
-        $response->getBody()->write(json_encode(["isModerator" => false]));
-        return $response->withHeader('Content-Type', 'application/json');
-    }
-
 });

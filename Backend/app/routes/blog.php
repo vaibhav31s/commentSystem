@@ -11,7 +11,7 @@ require_once __DIR__ . '/../middlewares/jsonBodyParser.php';
 
 
 
-$app -> post('/api/createPost', function(Request $request, Response $response) {
+$app -> post('/createPost', function(Request $request, Response $response) {
     $jsonBody = $request->getBody();
     $data = json_decode($jsonBody, true);
     $title = $data['title']; 
@@ -56,7 +56,7 @@ $app -> post('/api/createPost', function(Request $request, Response $response) {
     return $response->withHeader('Content-Type', 'application/json');
 }) -> add($jsonBodyParser);
 
-$app -> get('/api/blogs', function(Request $request, Response $response) {
+$app -> get('/blogs', function(Request $request, Response $response) {
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     $queryBuilder->select('*')
         ->from('Blog')
@@ -68,7 +68,7 @@ $app -> get('/api/blogs', function(Request $request, Response $response) {
 });
 
 //get blogs by user id  
-$app -> get('/api/user/{id}', function(Request $request, Response $response, $args) {
+$app -> get('/user/{id}', function(Request $request, Response $response, $args) {
     $id = $args['id'];
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     $queryBuilder->select('*')
@@ -83,7 +83,7 @@ $app -> get('/api/user/{id}', function(Request $request, Response $response, $ar
 });
 
 //get blog by blog id
-$app -> get('/api/blog/{id}', function(Request $request, Response $response, $args) {
+$app -> get('/blog/{id}', function(Request $request, Response $response, $args) {
     $id = $args['id'];
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     $queryBuilder->select('*')

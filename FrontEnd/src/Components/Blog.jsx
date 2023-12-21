@@ -16,7 +16,7 @@ const Blogs = (props) => {
     // const id = 8;
     useEffect(() => {
         const fetchBlog = async () => {
-            const response = await fetch(`/api/blog/${id}`);
+            const response = await fetch(`http://localhost:8888/blog/${id}`);
             const data = await response.json();
             setBlog(data[0]);
         };

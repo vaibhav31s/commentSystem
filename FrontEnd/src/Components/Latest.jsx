@@ -7,7 +7,7 @@ const Latest =  () => {
   const [latestBlogs, setPosts] = useState([]);
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await fetch("/api/blogs");
+      const response = await fetch("http://localhost:8888/blogs");
       const data = await response.json();
       setPosts(data);
     };
