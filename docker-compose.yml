@@ -7,8 +7,6 @@ services:
         image: nginx
         ports:
             - "8888:80"
-        volumes:
-            - ./Backend/app:/app
         depends_on:
             - php
         restart: always
@@ -23,8 +21,6 @@ services:
         build:
             context: Backend
             dockerfile: dev.Dockerfile
-        volumes:
-            - ./Backend/app:/app:vaibhav
         depends_on:
             - mysql
         restart: always
