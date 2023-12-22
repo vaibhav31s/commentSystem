@@ -1,12 +1,13 @@
 
 import React from 'react'
 import { useEffect, useState } from "react";
+const { REACT_APP_BACKEND_URL } = process.env;
 const PostLists = () => {
   // http://localhost:8888/blogs/
   const [posts, setPosts] = useState([]);
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await fetch("http://localhost:8888/blogs");
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/blogs`);
       const data = await response.json();
       setPosts(data);
     };

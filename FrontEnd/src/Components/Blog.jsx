@@ -5,6 +5,7 @@ import Comments from "./Comment";
 import { useParams } from "react-router-dom";
 import { BsBookmarkCheckFill, BsBookmarkDash } from "react-icons/bs";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
+const  {REACT_APP_BACKEND_URL} = process.env
 const Blogs = (props) => {
   const { id } = useParams();
   // const id = router
@@ -16,7 +17,7 @@ const Blogs = (props) => {
   // const id = 8;
   useEffect(() => {
     const fetchBlog = async () => {
-      const response = await fetch(`http://localhost:8888/blog/${id}`);
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/blog/${id}`);
       const data = await response.json();
       setBlog(data[0]);
     };

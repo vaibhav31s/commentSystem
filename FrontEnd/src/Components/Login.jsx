@@ -3,7 +3,7 @@ import { FaGoogle, FaGithub } from "react-icons/fa";
 import axios from "axios";
 import fit from "./loginbanner.webp";
 import { toast } from "react-toastify";
-
+const { REACT_APP_BACKEND_URL } = process.env;
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +19,7 @@ const Login = () => {
 
     const res = await toast.promise(
       axios
-        .post("http://localhost:8888/login", {
+        .post(`${REACT_APP_BACKEND_URL}/login`, {
           email,
           password,
         })

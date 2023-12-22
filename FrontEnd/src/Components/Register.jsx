@@ -3,6 +3,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useState } from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 
+const { REACT_APP_BACKEND_URL } = process.env;
 const Register = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -38,7 +39,7 @@ const Register = () => {
         }
         
         setAvatar("https://api.multiavatar.com/" + name.split(" ").join + ".png");
-        const res = await fetch("http://localhost:8888/register", {
+        const res = await fetch(`${REACT_APP_BACKEND_URL}/register`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

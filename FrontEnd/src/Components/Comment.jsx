@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import Card from "./Comment/Card";
 import { toast } from "react-toastify";
 
+const  {REACT_APP_BACKEND_URL} = process.env
+
+console.log("BACKEEND", REACT_APP_BACKEND_URL);
 const Comment = (blogs) => {
   // console.log("blogs", blogs);
   blogs = blogs.blogs;
@@ -21,7 +24,7 @@ const Comment = (blogs) => {
   const [blog, setBlog] = useState(null);
   const fetchVotes = async () => {
     if (blogs.id) {
-      const response = await fetch(`http://localhost:8888/blog/${bid}/votes`, {
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/blog/${bid}/votes`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -40,7 +43,7 @@ const Comment = (blogs) => {
 
   const getComment = async () => {
     if (blogs.id) {
-      const response = await fetch(`http://localhost:8888/replies/${bid}`, {
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/replies/${bid}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -76,7 +79,7 @@ const Comment = (blogs) => {
     }
     const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
 
-    await fetch(`http://localhost:8888/create/reply`, {
+    await fetch(`${REACT_APP_BACKEND_URL}/create/reply`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -94,7 +97,7 @@ const Comment = (blogs) => {
       .then((res) => res.json())
       .then((data1) => {
         // console.log(data);
-        const lastKey = fetch(`http://localhost:8888/reply/getlastkey`, {
+        const lastKey = fetch(`${REACT_APP_BACKEND_URL}/reply/getlastkey`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -142,7 +145,7 @@ const Comment = (blogs) => {
     }
 
     if (blogs.id) {
-      const response = await fetch(`http://localhost:8888/myvotes/blogid`, {
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/myvotes/blogid`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -169,7 +172,7 @@ const Comment = (blogs) => {
     }
 
     if (blogs.id) {
-      const response = await fetch(`http://localhost:8888/moderatorcheck/${authorId}`, {
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/moderatorcheck/${authorId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
