@@ -20,7 +20,10 @@ const Blogs = (props) => {
             const data = await response.json();
             setBlog(data[0]);
         };
+ 
         fetchBlog();
+
+  
     }
     , [id]);
 
@@ -42,6 +45,7 @@ const Blogs = (props) => {
           <ChevronLeftIcon className="h-4 w-4 text-blue-500 dark:text-white" />
           <div
             // onClick={() => router.back()}
+            onClick={() => window.history.back()}
             className="ml-2 text-md font-bold text-blue-500 dark:text-white"
           >
             Back to home
@@ -175,7 +179,7 @@ const Blogs = (props) => {
             </div>
           )}
         </div>
-        <Comments blogs={blog} />
+        <Comments blogs={blog}  />
       </div>
     </div>
   );
