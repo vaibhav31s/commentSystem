@@ -50,7 +50,7 @@ USER vaibhav
 
 COPY ./app /app
 
-RUN chmod +x ./composer
+RUN chmod +x /usr/local/bin/composer
 RUN cd /app && composer update
 
 
