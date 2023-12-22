@@ -7,14 +7,39 @@ require_once __DIR__ . '/../src/config.php';
 require_once __DIR__ . '/../src/db.php';
 require_once __DIR__ . '/../middlewares/jsonBodyParser.php';
 
+function getVotesForReply($replyId, $flatResults)
+{
+    $votes = [
+        'upvotes' => 0,
+        'downvotes' => 0,
+    ];
+
+    foreach ($flatResults as $result) {
+        if ($result['mainReplyId'] == $replyId) {
+            if ($result['voteType'] == 'up') {
+                $votes['upvotes']++;
+            } elseif ($result['voteType'] == 'down') {
+                $votes['downvotes']++;
+            }
+        }
+    }
+
+    return $votes;
+}
 function buildNestedReplies($flatResults, $parentId = null)
 {
     $nestedResults = [];
 
+    //build nested replies
     foreach ($flatResults as $result) {
         if ($result['replyId'] == $parentId) {
+            
             $result['replies'] = buildNestedReplies($flatResults, $result['mainReplyId']);
+            $result['votes'] = getVotesForReply($result['mainReplyId'], $flatResults);
+
             $nestedResults[] = $result;
+            
+            
         }
     }
 
@@ -29,6 +54,7 @@ function countNestedReplies($nestedResults){
             $count += countNestedReplies($result['replies']);
         }
     }
+
     return $count;
 }
 
@@ -37,13 +63,15 @@ $app -> get('/replies/{id}', function (Request $request, Response $response, $ar
   
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     $queryBuilder
-    ->select ( 'r.id as mainReplyId','reply', 'replyId', 'r.authorName', 'r.timestamp', "r.blogId", "r.authorId")
+    ->select ( 'r.id as mainReplyId','reply', 'r.replyId', 'r.authorName', 'r.timestamp', "r.blogId", "r.authorId" , 'v.voteType' )
     ->distinct()
     ->from('Replies', 'r')
     ->innerJoin('r', 'Blog', 'b', 'r.blogId = b.id')
     ->innerJoin('r', 'Comment','c', 'r.blogId = c.blogId')
+    ->leftJoin('r', 'Vote', 'v', 'r.id = v.replyId')
     ->where('r.blogId = ?')
     ->setParameter(1, $id);
+    
 
 
     $results = $queryBuilder->executeQuery()->fetchAllAssociative();

@@ -40,6 +40,9 @@ RUN set -eux; \
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 RUN pecl install imagick-3.7.0 && docker-php-ext-enable imagick
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Set the working directory to /app
+
 
 RUN adduser vaibhav
 USER vaibhav

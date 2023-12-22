@@ -7,7 +7,10 @@ import {
 } from "react-icons/bi";
 import { toast } from "react-toastify";
 
+
 const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, allVotesReply, isModerator} ) => {
+
+
 
   const authorId = localStorage.getItem("authorId");
   const fromBookmarked = true;
@@ -35,6 +38,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
     myVotedState = item.voteType;
     
 
+
     return true;
   }});
   const [hide, setHide] = useState(false);
@@ -45,10 +49,17 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
 
 
 
+
+    return true;
+  }});
+
+  const [upvote, setUpvote] = useState(myVotedState === "up");
+  const [downvote, setDownvote] = useState(myVotedState === "down");
   const submitComment = async () => {
     if (commentText.length <= 10) {
       toast.error("Reply should be at least 10 characters long");
      
+
       return;
     }
     if(totalRepliesAtTop == 50) {
@@ -58,6 +69,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
       toast.error("Maximum 50 replies allowed");
       return;
     }
+
     try {
       const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
   
@@ -99,7 +111,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
         authorName: localStorage.getItem("Name"),
         replies: [],
         mainReplyId: lastKeyData[0].id,
-       
+
       });
   
       setComments(comments);
@@ -113,6 +125,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
   };
   
   const deleteReply = async () => {
+
 
     if(isModerator) {
       try {
@@ -133,7 +146,6 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
       return;
     }
 
-
     try {
       const response = await fetch("http://localhost:8888/reply/delete", {
         method: "POST",
@@ -149,8 +161,9 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
       toast.error("Something went wrong");
     }
   };
-  
+
   const hideComment = async () => {
+
 
     if(isModerator) {
       try {
@@ -176,7 +189,9 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
   };
   
   useEffect(() => {
+
    
+
     setCurTime(new Date().toLocaleString());
     if (localStorage.getItem("login") == "true") {
       setuserEmail(localStorage.getItem("Email"));
@@ -203,7 +218,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
       toast.error("Reply should be at least 10 characters long");
       return;
     }
-    
+
     if(isModerator) {
       try {
         const response = await fetch("http://localhost:8888/reply/edit", {
@@ -222,6 +237,8 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
 
       return;
     } 
+
+
 
     try {
       const response = await fetch("http://localhost:8888/reply/edit", {
@@ -536,7 +553,9 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
               key={id}
               className={`pl-10 pt-2 text-base  border-l-2 dark:border-gray-700 dark:bg-gray-900`}
             > 
+
               <Card blog={comment} level={level + 1} myvotes={myvotes} totalRepliesAtTop={totalRepliesAtTop} setTotalRepliesAtTop={setTotalRepliesAtTop} allVotesReply={allVotesReply} isModerator={isModerator}/>
+
             </article>
           );
         })}

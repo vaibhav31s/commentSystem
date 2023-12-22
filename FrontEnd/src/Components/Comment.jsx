@@ -12,6 +12,7 @@ const Comment = (blogs) => {
   const authorId = localStorage.getItem("authorId");
   const [totalReplies, setTotalReplies] = useState(0);
   const [myVotes, setMyVotes] = useState([]);
+
   const [totalRepliesAtTop, setTotalRepliesAtTop] = useState(null);
 
   const [isModerator, setIsModerator] = useState(false);
@@ -55,6 +56,18 @@ const Comment = (blogs) => {
         });
     }
   };
+
+  useEffect(() => {
+    //    if()
+    // console.log("useEffect", blogs.id);
+    if (localStorage.getItem("login") == "true") {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+    getComment();
+  }, []);
+
   const submitComment = async () => {
     
     if (comment.length <= 10) {
@@ -108,15 +121,20 @@ const Comment = (blogs) => {
             setComment("");
             toast.success("Comment posted");
 
+            
+
             totalRepliesAtTop.push(0);
             setTotalRepliesAtTop(totalRepliesAtTop);
             return data;
           });
       })
       .catch((err) => {
+
+
         toast.error("Something went wrong");
       });
   };
+
 
   const getVotes = async () => {
     if (localStorage.getItem("login") != "true") {
@@ -136,6 +154,7 @@ const Comment = (blogs) => {
       })
         .then((res) => res.json())
         .then((data) => {
+
           setMyVotes(data);
         })
         .catch((err) => {
@@ -160,6 +179,7 @@ const Comment = (blogs) => {
         .then((count) => {
           setIsModerator(count.count < 10 ? false : true);
           
+
         })
         .catch((err) => {
           toast.error("Something went wrong");
@@ -169,6 +189,7 @@ const Comment = (blogs) => {
 
 
   useEffect(() => {
+
 
 
     fetchVotes();
@@ -251,12 +272,15 @@ const Comment = (blogs) => {
           Array.isArray(comments) &&
           comments.map((comment, id) => {
             let avatar = comment?.text?.split(" ")[0];
+
             let totalrrr = comment.replyCount;
+
             return (
               <article
                 key={id}
                 className="p-2 text-base bg-white  border-gray-200 dark:border-gray-700 dark:bg-gray-900"
               >
+
                 <Card
                   blog={comment}
                   level={0}
@@ -273,6 +297,7 @@ const Comment = (blogs) => {
                   allVotesReply={allVotesReply}
                   isModerator={isModerator}
                 />
+
               </article>
             );
           })}
