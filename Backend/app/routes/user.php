@@ -64,10 +64,24 @@ $app->post('/register', function (Request $request, Response $response) {
     $name = $data['name'];
     $password = $data['password'];
     $email = $data['email'];
+    $avatar = $data['avatar'];
     $hash = password_hash($password, PASSWORD_DEFAULT);
 
+    if(strlen($password) < 6){
+        $response->getBody()->write('
+        {
+            "message": "Password must be atleast 6 characters long"
+        }');
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(401);   
+    }
 
-
+    if(strlen($email) == 0 || strlen($password) == 0 || strlen($name) == 0){ 
+        $response->getBody()->write('
+        {
+            "message": "Please fill all the fields"
+        }');
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(401); 
+    }   
 
     $queryBuilder = $this->get('DB')->getQueryBuilder();
 
@@ -80,13 +94,13 @@ $app->post('/register', function (Request $request, Response $response) {
 
 
     // if email exist then return 
-    // if(count($results) > 0) {
-    //     $response->getBody()->write('
-    //     {
-    //         "message": "Email already exist"
-    //     }');
-    //     return $response->withHeader('Content-Type', 'application/json');   
-    // }
+    if(count($results) > 0) {
+        $response->getBody()->write('
+        {
+            "message": "Email already exist"
+        }');
+        return $response->withHeader('Content-Type', 'application/json');   
+    }
 
 
 
@@ -97,13 +111,14 @@ $app->post('/register', function (Request $request, Response $response) {
             [
                 'Name' => '?',
                 'Password' => '?',
-                'Email' => '?'
+                'Email' => '?',
+                'avatar'=> '?',
             ]
         )
         ->setParameter(0, $name)
         ->setParameter(1, $hash)
-        ->setParameter(2, $email);
-
+        ->setParameter(2, $email)
+        ->setParameter(3, $avatar);
 
     $results = $queryBuilder->executeStatement();
 
