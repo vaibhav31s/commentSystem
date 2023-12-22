@@ -44,5 +44,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Set the working directory to /app
 
 
+RUN adduser vaibhav
+USER vaibhav
 
 CMD ["php-fpm"]
