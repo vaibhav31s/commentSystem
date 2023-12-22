@@ -282,6 +282,12 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
               <BiSolidUpvote
                 className="w-5 h-5 text-gray-400 dark:text-gray-300"
                 onClick={() => {
+                  if(!isLoggedIn) {
+                    toast.error("Login to vote");
+                    return;
+                  }
+                  
+
                   setUpvote(false);
                   fetch(`${REACT_APP_BACKEND_URL}/vote/delete`, {
                     method: "POST",
@@ -298,6 +304,10 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
             ) : (
               <BiUpvote
                 onClick={() => {
+                  if(!isLoggedIn) {
+                    toast.error("Login to vote");
+                    return;
+                  }
                   fetch(`${REACT_APP_BACKEND_URL}/reply/votes`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -321,6 +331,10 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
               <BiSolidDownvote
                 className="w-5 h-5 text-gray-400 dark:text-gray-300"
                 onClick={() => {
+                  if(!isLoggedIn) {
+                    toast.error("Login to vote");
+                    return;
+                  }
                   fetch(`${REACT_APP_BACKEND_URL}/vote/delete`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -342,7 +356,12 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
               <BiDownvote
                 className="w-5 h-5 text-gray-400 dark:text-gray-300"
                 onClick={() => {
+                  if(!isLoggedIn) {
+                    toast.error("Login to vote");
+                    return;
+                  }
                   fetch(`${REACT_APP_BACKEND_URL}/reply/votes`, {
+                    
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -381,7 +400,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
                 <span className="text-xl  font-sans text-gray-500 dark:text-gray-400">
                   {blog && blog.reply && blog.reply}
                 </span>
-                {(curTimeDiff < 5 || isModerator) && (
+                {((authorId == comments.authorId && curTimeDiff < 5) || isModerator) && (
                   <button
                     onClick={() => {
                       setEditComment(true);
