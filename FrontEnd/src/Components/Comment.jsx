@@ -7,17 +7,36 @@ const Comment = (blogs) => {
   blogs = blogs.blogs;
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("login") == "true");
   const bid = blogs.id;
   const authorId = localStorage.getItem("authorId");
   const [totalReplies, setTotalReplies] = useState(0);
   const [myVotes, setMyVotes] = useState([]);
-  const [totalRepliesAtTop, setTotalRepliesAtTop] = useState([]);
 
+  const [totalRepliesAtTop, setTotalRepliesAtTop] = useState(null);
 
-  
+  const [isModerator, setIsModerator] = useState(false);
+  const [allVotesReply, setAllVotesReply] = useState();
+
   const [blog, setBlog] = useState(null);
-
+  const fetchVotes = async () => {
+    if (blogs.id) {
+      const response = await fetch(`http://localhost:8888/blog/${bid}/votes`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setAllVotesReply(data);
+          console.log(data);
+        })
+        .catch((err) => {
+          // console.log(err);
+          toast.error("Something went wrong");
+        });
+    }
+  };
 
   const getComment = async () => {
     if (blogs.id) {
@@ -37,6 +56,7 @@ const Comment = (blogs) => {
         });
     }
   };
+
   useEffect(() => {
     //    if()
     // console.log("useEffect", blogs.id);
@@ -49,12 +69,12 @@ const Comment = (blogs) => {
   }, []);
 
   const submitComment = async () => {
+    
     if (comment.length <= 10) {
       toast.error("Comment should be atleast 10 characters long");
       return;
     }
     const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
-   
 
     await fetch(`http://localhost:8888/create/reply`, {
       method: "POST",
@@ -68,6 +88,7 @@ const Comment = (blogs) => {
         blogId: bid,
         timestamp: timestamp,
         authorName: localStorage.getItem("Name"),
+
       }),
     })
       .then((res) => res.json())
@@ -99,20 +120,27 @@ const Comment = (blogs) => {
             setComments(comments);
             setComment("");
             toast.success("Comment posted");
+
             
+
             totalRepliesAtTop.push(0);
             setTotalRepliesAtTop(totalRepliesAtTop);
             return data;
           });
       })
       .catch((err) => {
-        
+
+
         toast.error("Something went wrong");
       });
   };
 
 
   const getVotes = async () => {
+    if (localStorage.getItem("login") != "true") {
+      return false;
+    }
+
     if (blogs.id) {
       const response = await fetch(`http://localhost:8888/myvotes/blogid`, {
         method: "POST",
@@ -126,9 +154,32 @@ const Comment = (blogs) => {
       })
         .then((res) => res.json())
         .then((data) => {
-          
+
           setMyVotes(data);
-      
+        })
+        .catch((err) => {
+          toast.error("Something went wrong");
+        });
+    }
+  };
+  
+  const getModerator = async () => {
+    if (localStorage.getItem("login") != "true") {
+      return false;
+    }
+
+    if (blogs.id) {
+      const response = await fetch(`http://localhost:8888/moderatorcheck/${authorId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
+        .then((res) => res.json())
+        .then((count) => {
+          setIsModerator(count.count < 10 ? false : true);
+          
+
         })
         .catch((err) => {
           toast.error("Something went wrong");
@@ -138,10 +189,17 @@ const Comment = (blogs) => {
 
 
   useEffect(() => {
-  getVotes  ();
-  },[]);
 
 
+
+    fetchVotes();
+    getComment();
+    getVotes();
+    fetchVotes();
+    getModerator();
+  }, []);
+
+ 
 
 
   useEffect(() => {
@@ -159,7 +217,12 @@ const Comment = (blogs) => {
       });
     }
   }, [comments]);
+
   // const [totalReplies]
+  if (totalRepliesAtTop == null) {
+    return <h1>Loading...</h1>;
+  }
+
   return (
     <section className="w-full bg-white dark:bg-gray-900 py-8 lg:py-16">
       <div className=" mx-auto px-4">
@@ -187,7 +250,7 @@ const Comment = (blogs) => {
             </div>
             <button
               type="submit"
-              onClick={()=>submitComment()}
+              onClick={() => submitComment()}
               className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center bg-black  text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800"
             >
               Post comment
@@ -209,27 +272,38 @@ const Comment = (blogs) => {
           Array.isArray(comments) &&
           comments.map((comment, id) => {
             let avatar = comment?.text?.split(" ")[0];
-              let totalrrr= comment.replyCount;
+
+            let totalrrr = comment.replyCount;
+
             return (
               <article
                 key={id}
                 className="p-2 text-base bg-white  border-gray-200 dark:border-gray-700 dark:bg-gray-900"
               >
-                <Card blog={comment} level={0} myvotes={myVotes} totalRepliesAtTop={totalRepliesAtTop[id]}
-                setTotalRepliesAtTop={(newTotalReplies) => {
-                  // Update the state with the newTotalReplies for the current comment
-                  setTotalRepliesAtTop((prev) => {
-                    const newState = [...prev];
-                    newState[id] = newTotalReplies;
-                    return newState;
-                  });
-                }}/>
+
+                <Card
+                  blog={comment}
+                  level={0}
+                  myvotes={myVotes}
+                  totalRepliesAtTop={totalRepliesAtTop[id]}
+                  setTotalRepliesAtTop={(newTotalReplies) => {
+               
+                    setTotalRepliesAtTop((prev) => {
+                      const newState = [...prev];
+                      newState[id] = newTotalReplies;
+                      return newState;
+                    });
+                  }}
+                  allVotesReply={allVotesReply}
+                  isModerator={isModerator}
+                />
+
               </article>
             );
           })}
+          
       </div>
     </section>
   );
 };
-
 export default Comment;

@@ -59,3 +59,21 @@ $app -> get('/blog/{id}/comments', function(Request $request, Response $response
     $response->getBody()->write(json_encode($results));
     return $response->withHeader('Content-Type', 'application/json');
 });
+
+$app -> get('/blog/{id}/votes', function(Request $request, Response $response, array $args) {
+    $id = $args['id'];
+  
+    $queryBuilder = $this->get('DB')->getQueryBuilder();
+    $queryBuilder->select('replyId')
+    ->addSelect('SUM(CASE WHEN voteType = \'up\' THEN 1 ELSE 0 END) as up')
+    ->addSelect('SUM(CASE WHEN voteType = \'down\' THEN 1 ELSE 0 END) as down')
+    ->from('Vote')
+    ->where('blogId = ?')
+    ->setParameter(1, $id)
+    ->groupBy('replyId')
+    ->having('COUNT(*) > 0');
+    
+    $results = $queryBuilder->executeQuery()->fetchAllAssociative();
+    $response->getBody()->write(json_encode($results));
+    return $response->withHeader('Content-Type', 'application/json');
+});

@@ -11,6 +11,7 @@ import Login from "./Components/Login";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Replies from "./Components/Replies";
+import Register from "./Components/Register";
 function App() {
   return (
     <html lang="en">
@@ -44,6 +45,7 @@ function App() {
               <Route path="/replies/:id" element={<Replies />} />
 
               <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
             </Routes>
           </div>{" "}
         </body>

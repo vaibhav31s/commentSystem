@@ -37,3 +37,6 @@ include __DIR__ . '/reply.php';
 
 //votes api routes
 include __DIR__ . '/votes.php';
+
+//moderator api routes
+include __DIR__ . '/moderator.php';
