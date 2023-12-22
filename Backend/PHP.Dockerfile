@@ -1,6 +1,7 @@
 FROM php:8.1.23-fpm-bookworm
 
 RUN apt-get update
+WORKDIR /app
 
 RUN apt-get install -y --no-install-recommends \
         libfreetype6-dev \
@@ -46,5 +47,12 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN adduser vaibhav
 USER vaibhav
+
+COPY ./app /app
+
+RUN chmod +x ./composer
+RUN cd /app && composer update
+
+
 
 CMD ["php-fpm"]
