@@ -14,6 +14,7 @@ const Comment = (blogs) => {
   const [myVotes, setMyVotes] = useState([]);
   const [totalRepliesAtTop, setTotalRepliesAtTop] = useState(null);
 
+  const [isModerator, setIsModerator] = useState(false);
   const [allVotesReply, setAllVotesReply] = useState();
 
   const [blog, setBlog] = useState(null);
@@ -55,6 +56,7 @@ const Comment = (blogs) => {
     }
   };
   const submitComment = async () => {
+    
     if (comment.length <= 10) {
       toast.error("Comment should be atleast 10 characters long");
       return;
@@ -73,6 +75,7 @@ const Comment = (blogs) => {
         blogId: bid,
         timestamp: timestamp,
         authorName: localStorage.getItem("Name"),
+
       }),
     })
       .then((res) => res.json())
@@ -141,6 +144,29 @@ const Comment = (blogs) => {
     }
   };
   
+  const getModerator = async () => {
+    if (localStorage.getItem("login") != "true") {
+      return false;
+    }
+
+    if (blogs.id) {
+      const response = await fetch(`http://localhost:8888/moderatorcheck/${authorId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
+        .then((res) => res.json())
+        .then((count) => {
+          setIsModerator(count.count < 5 ? false : true);
+          
+        })
+        .catch((err) => {
+          toast.error("Something went wrong");
+        });
+    }
+  };
+
 
   useEffect(() => {
 
@@ -149,6 +175,7 @@ const Comment = (blogs) => {
     getComment();
     getVotes();
     fetchVotes();
+    getModerator();
   }, []);
 
  
@@ -169,7 +196,7 @@ const Comment = (blogs) => {
       });
     }
   }, [comments]);
-  
+
   // const [totalReplies]
   if (totalRepliesAtTop == null) {
     return <h1>Loading...</h1>;
@@ -244,6 +271,7 @@ const Comment = (blogs) => {
                     });
                   }}
                   allVotesReply={allVotesReply}
+                  isModerator={isModerator}
                 />
               </article>
             );

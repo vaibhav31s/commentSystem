@@ -2,38 +2,35 @@ import React, { useEffect, useState, useSearchParams } from "react";
 import { TextToSpeech, useTts } from "tts-react";
 // import Comments from "components/Comments";
 import Comments from "./Comment";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import { BsBookmarkCheckFill, BsBookmarkDash } from "react-icons/bs";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 const Blogs = (props) => {
-    const { id } = useParams();
-    // const id = router
-    const [blog, setBlog] = useState(null);
-    const [recs, setRecs] = useState([]);
-    const [isLiked, setIsLiked] = useState(false);
-    const [summery, setSummery] = useState("");
-    const [scroll, setScroll] = useState(0);
-    // const id = 8;
-    useEffect(() => {
-        const fetchBlog = async () => {
-            const response = await fetch(`http://localhost:8888/blog/${id}`);
-            const data = await response.json();
-            setBlog(data[0]);
-        };
- 
-        fetchBlog();
+  const { id } = useParams();
+  // const id = router
+  const [blog, setBlog] = useState(null);
+  const [recs, setRecs] = useState([]);
+  const [isLiked, setIsLiked] = useState(false);
+  const [summery, setSummery] = useState("");
+  const [scroll, setScroll] = useState(0);
+  // const id = 8;
+  useEffect(() => {
+    const fetchBlog = async () => {
+      const response = await fetch(`http://localhost:8888/blog/${id}`);
+      const data = await response.json();
+      setBlog(data[0]);
+    };
 
-  
-    }
-    , [id]);
+    fetchBlog();
+  }, [id]);
 
-    if(!blog){
-        return <h1>Loading...</h1>
-    }
+  if (!blog) {
+    return <h1>Loading...</h1>;
+  }
 
   return (
     <div className="flex flex-col">
-          {/* <h2>Blog Post {id}</h2> */}
+      {/* <h2>Blog Post {id}</h2> */}
       <div id="progressBarContainer">
         <div
           id="progressBar"
@@ -52,9 +49,11 @@ const Blogs = (props) => {
           </div>
         </div>
         <div className="mt-6">
-          {blog && blog?.tags && blog?.tags?.length > 0 && (  
+          {blog && blog?.tags && blog?.tags?.length > 0 && (
             <img
-              src={`https://source.unsplash.com/random/?${blog?.tags?.split(",")[0]}`}
+              src={`https://source.unsplash.com/random/?${
+                blog?.tags?.split(",")[0]
+              }`}
               alt=""
               className="w-full max-h-[300px] lg:max-h-[450px] object-cover"
             />
@@ -98,15 +97,15 @@ const Blogs = (props) => {
               </div>
             </div>
           </div>
-          {isLiked  ? (
+          {isLiked ? (
             <BsBookmarkCheckFill
               className="h-10 w-10 dark:text-white"
-            //   onClick={() => deleteBookmarked(blog.id)}
+              //   onClick={() => deleteBookmarked(blog.id)}
             />
           ) : (
             <BsBookmarkDash
               className="h-10 w-10 dark:text-white"
-            //   onClick={() => addBookmarked(blog.id)}
+              //   onClick={() => addBookmarked(blog.id)}
             />
           )}
         </div>
@@ -133,7 +132,7 @@ const Blogs = (props) => {
               size="medium"
               volume={1}
             >
-              {blog?.Description    }
+              {blog?.Description}
             </TextToSpeech>
           </div>
         </div>
@@ -179,11 +178,10 @@ const Blogs = (props) => {
             </div>
           )}
         </div>
-        <Comments blogs={blog}  />
+        <Comments blogs={blog} />
       </div>
     </div>
   );
 };
-  
 
-export default Blogs
+export default Blogs;

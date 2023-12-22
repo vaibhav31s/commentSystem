@@ -7,7 +7,7 @@ import {
 } from "react-icons/bi";
 import { toast } from "react-toastify";
 
-const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, allVotesReply} ) => {
+const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, allVotesReply, isModerator} ) => {
 
   const authorId = localStorage.getItem("authorId");
   const fromBookmarked = true;
@@ -37,6 +37,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
 
     return true;
   }});
+  const [hide, setHide] = useState(false);
 
 
   const [upvote, setUpvote] = useState(myVotedState === "up");
@@ -112,6 +113,27 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
   };
   
   const deleteReply = async () => {
+
+    if(isModerator) {
+      try {
+        const response = await fetch("http://localhost:8888/reply/edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ replyId: comments.mainReplyId, reply: "This reply has been deleted (edited by moderator)" }),
+        });
+    
+        const data = await response.json();
+        toast.success("Reply deleted");
+        blog.reply = "This reply has been deleted (edited by moderator)";
+        setBlogDelete(true);
+      } catch (err) {
+        toast.error("Something went wrong");
+      }
+
+      return;
+    }
+
+
     try {
       const response = await fetch("http://localhost:8888/reply/delete", {
         method: "POST",
@@ -128,7 +150,31 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
     }
   };
   
- 
+  const hideComment = async () => {
+
+    if(isModerator) {
+      try {
+        const response = await fetch("http://localhost:8888/reply/edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ replyId: comments.mainReplyId, reply: "This comment is hidden by the moderator." }),
+        });
+    
+        const data = await response.json();
+        toast.success("Reply hidden");
+        blog.reply = "This comment is hidden by the moderator.";
+        setHide(true);
+        
+       
+      } catch (err) {
+        toast.error("Something went wrong");
+      }
+
+      return;
+    }
+
+  };
+  
   useEffect(() => {
    
     setCurTime(new Date().toLocaleString());
@@ -141,7 +187,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
         new Date(blog.timestamp)
       )
     );
-     console.log("allVotesReply", allVotesReply);
+    //  console.log("allVotesReply", allVotesReply);
    Array.isArray(allVotesReply) &&  allVotesReply.forEach(item => {
       if(item.replyId === comments.mainReplyId) {
        setVotes(item.up - item.down);
@@ -157,7 +203,26 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
       toast.error("Reply should be at least 10 characters long");
       return;
     }
-  
+    
+    if(isModerator) {
+      try {
+        const response = await fetch("http://localhost:8888/reply/edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ replyId: comments.mainReplyId, reply: commentText + " (edited by moderator)" }),
+        });
+    
+        const data = await response.json();
+        toast.success("Reply edited");
+        blog.reply = commentText +  " (edited by moderator)" ;
+        setEditComment(false);
+      } catch (err) {
+        toast.error("Something went wrong");
+      }
+
+      return;
+    } 
+
     try {
       const response = await fetch("http://localhost:8888/reply/edit", {
         method: "POST",
@@ -306,7 +371,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
                 <span className="text-xl  font-sans text-gray-500 dark:text-gray-400">
                   {blog && blog.reply && blog.reply}
                 </span>
-                {curTimeDiff < 5 && (
+                {(curTimeDiff < 5 || isModerator) && (
                   <button
                     onClick={() => {
                       setEditComment(true);
@@ -328,6 +393,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
             {/* Controls */}
             <div className="flex flex-row justify-end gap-4">
               <div className="flex flex-row text-sm md:text-sm font-medium dark:text-white gap-2">
+                {isModerator && <button onClick={()=>hideComment()} className="p-2 border border-r-2 rounded-lg">Hide</button>}
                 {comments.replyId === null ? (
                   <h1 className="p-2 border border-r-2 rounded-lg">
                     {" "}
@@ -379,9 +445,9 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
                 )}
               </div>
 
-              {blog.reply !== "This reply has been deleted" &&
+              {((blog.reply !== "This reply has been deleted" &&
                 isLoggedIn &&
-                fromOwnBlog && (
+                fromOwnBlog ) || isModerator ) && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -470,7 +536,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
               key={id}
               className={`pl-10 pt-2 text-base  border-l-2 dark:border-gray-700 dark:bg-gray-900`}
             > 
-              <Card blog={comment} level={level + 1} myvotes={myvotes} totalRepliesAtTop={totalRepliesAtTop} setTotalRepliesAtTop={setTotalRepliesAtTop} allVotesReply={allVotesReply}/>
+              <Card blog={comment} level={level + 1} myvotes={myvotes} totalRepliesAtTop={totalRepliesAtTop} setTotalRepliesAtTop={setTotalRepliesAtTop} allVotesReply={allVotesReply} isModerator={isModerator}/>
             </article>
           );
         })}
