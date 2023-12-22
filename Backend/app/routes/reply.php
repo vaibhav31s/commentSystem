@@ -35,7 +35,6 @@ function buildNestedReplies($flatResults, $parentId = null)
         if ($result['replyId'] == $parentId) {
             
             $result['replies'] = buildNestedReplies($flatResults, $result['mainReplyId']);
-            $result['votes'] = getVotesForReply($result['mainReplyId'], $flatResults);
 
             $nestedResults[] = $result;
             
@@ -63,16 +62,13 @@ $app -> get('/replies/{id}', function (Request $request, Response $response, $ar
   
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     $queryBuilder
-    ->select ( 'r.id as mainReplyId','reply', 'r.replyId', 'r.authorName', 'r.timestamp', "r.blogId", "r.authorId" , 'v.voteType' )
+    ->select ( 'r.id as mainReplyId','reply', 'r.replyId', 'r.authorName', 'r.timestamp', "r.blogId", "r.authorId"  )
     ->distinct()
     ->from('Replies', 'r')
     ->innerJoin('r', 'Blog', 'b', 'r.blogId = b.id')
-    ->innerJoin('r', 'Comment','c', 'r.blogId = c.blogId')
-    ->leftJoin('r', 'Vote', 'v', 'r.id = v.replyId')
     ->where('r.blogId = ?')
-    ->setParameter(1, $id);
+    ->setParameter(0, $id);
     
-
 
     $results = $queryBuilder->executeQuery()->fetchAllAssociative();
     $nestedResults = buildNestedReplies($results);
