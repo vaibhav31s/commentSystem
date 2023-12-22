@@ -158,7 +158,7 @@ const Comment = (blogs) => {
       })
         .then((res) => res.json())
         .then((count) => {
-          setIsModerator(count.count < 5 ? false : true);
+          setIsModerator(count.count < 10 ? false : true);
           
         })
         .catch((err) => {
