@@ -45,8 +45,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Set the working directory to /app
 
 
-RUN adduser vaibhav
-USER vaibhav
+
 
 COPY ./app /app
 
@@ -54,5 +53,6 @@ RUN chmod +x /usr/local/bin/composer
 RUN cd /app && composer update
 
 
-
+RUN adduser vaibhav
+USER vaibhav
 CMD ["php-fpm"]
