@@ -18,16 +18,21 @@ services:
             dockerfile: PHP.Dockerfile
         volumes:
             - ./Backend/app:/app
+        environment:
+            DB_HOST: mysql
+            DB_NAME: ${DB_NAME:-slimphp}
+            DB_USER: ${DB_USER:-vaibhav}
+            DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
         depends_on:
             - mysql
         restart: always
     mysql:
         image: mariadb:11.1.2-jammy
         environment:
-            MYSQL_ROOT_PASSWORD: 'password'
-            MYSQL_USER: 'vaibhav'
-            MYSQL_PASSWORD: 'password'
-            MYSQL_DATABASE: 'slimphp'
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD must be set}
+            MYSQL_USER: ${DB_USER:-vaibhav}
+            MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
+            MYSQL_DATABASE: ${DB_NAME:-slimphp}
         volumes:
             - slimphp:/var/lib/mysql  # Corrected volume syntax
         ports:
