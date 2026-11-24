@@ -1,3 +1,4 @@
+import { authFetch } from "../../services/auth";
 import React, { useEffect, useState } from "react";
 import {
   BiUpvote,
@@ -66,7 +67,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
     try {
       const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
   
-      const response = await fetch(`${REACT_APP_BACKEND_URL}/create/reply`, {
+      const response = await authFetch(`${REACT_APP_BACKEND_URL}/create/reply`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -82,7 +83,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
   
       const data = await response.json();
   
-      const lastKeyResponse = await fetch(`${REACT_APP_BACKEND_URL}/reply/getlastkey`, {
+      const lastKeyResponse = await authFetch(`${REACT_APP_BACKEND_URL}/reply/getlastkey`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -122,7 +123,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
 
     if(isModerator) {
       try {
-        const response = await fetch(`${REACT_APP_BACKEND_URL}/reply/edit`, {
+        const response = await authFetch(`${REACT_APP_BACKEND_URL}/reply/edit`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ replyId: comments.mainReplyId, reply: "This reply has been deleted (edited by moderator)" }),
@@ -140,7 +141,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
     }
 
     try {
-      const response = await fetch(`${REACT_APP_BACKEND_URL}/reply/delete`, {
+      const response = await authFetch(`${REACT_APP_BACKEND_URL}/reply/delete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ replyId: comments.mainReplyId }),
@@ -160,7 +161,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
 
     if(isModerator) {
       try {
-        const response = await fetch(`${REACT_APP_BACKEND_URL}/reply/edit`, {
+        const response = await authFetch(`${REACT_APP_BACKEND_URL}/reply/edit`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ replyId: comments.mainReplyId, reply: "This comment is hidden by the moderator." }),
@@ -214,7 +215,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
 
     if(isModerator) {
       try {
-        const response = await fetch(`${REACT_APP_BACKEND_URL}/reply/edit`, {
+        const response = await authFetch(`${REACT_APP_BACKEND_URL}/reply/edit`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ replyId: comments.mainReplyId, reply: commentText + " (edited by moderator)" }),
@@ -234,7 +235,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
 
 
     try {
-      const response = await fetch(`${REACT_APP_BACKEND_URL}/reply/edit`, {
+      const response = await authFetch(`${REACT_APP_BACKEND_URL}/reply/edit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ replyId: comments.mainReplyId, reply: commentText }),
@@ -289,7 +290,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
                   
 
                   setUpvote(false);
-                  fetch(`${REACT_APP_BACKEND_URL}/vote/delete`, {
+                  authFetch(`${REACT_APP_BACKEND_URL}/vote/delete`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -308,7 +309,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
                     toast.error("Login to vote");
                     return;
                   }
-                  fetch(`${REACT_APP_BACKEND_URL}/reply/votes`, {
+                  authFetch(`${REACT_APP_BACKEND_URL}/reply/votes`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -335,7 +336,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
                     toast.error("Login to vote");
                     return;
                   }
-                  fetch(`${REACT_APP_BACKEND_URL}/vote/delete`, {
+                  authFetch(`${REACT_APP_BACKEND_URL}/vote/delete`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -360,7 +361,7 @@ const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, a
                     toast.error("Login to vote");
                     return;
                   }
-                  fetch(`${REACT_APP_BACKEND_URL}/reply/votes`, {
+                  authFetch(`${REACT_APP_BACKEND_URL}/reply/votes`, {
                     
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

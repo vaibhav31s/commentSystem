@@ -1,3 +1,4 @@
+import { saveSession } from "../services/auth";
 import React, { useState, useEffect } from "react";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import axios from "axios";
@@ -26,14 +27,9 @@ const Login = () => {
 
         .then((res) => {
           setData(res.data);
-          console.log(res.data);
 
-          // Set login credentials to local storage
-          localStorage.setItem("login", true);
-          localStorage.setItem("email", email);
-          localStorage.setItem("Name", res.data.Name);
-          localStorage.setItem("authorId", res.data.Id);
-          localStorage.setItem("avatar", res.data.avatar);
+          // Save the session, including the signed login token
+          saveSession(res.data, email);
 
           //redirect to last route 
           window.location.href = "/";

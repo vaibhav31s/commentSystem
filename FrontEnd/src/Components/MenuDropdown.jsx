@@ -1,3 +1,4 @@
+import { clearSession } from "../services/auth";
 import { Menu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 // import { ChevronDownIcon } from "@heroicons/react/20/solid";
@@ -142,12 +143,7 @@ const MenuDropdown = (props) => {
               {({ active }) => (
                 <div
                   onClick={() => {
-                    localStorage.removeItem("token");
-                    localStorage.setItem("login", false);
-                    localStorage.removeItem("email");
-                    localStorage.removeItem("Name");
-                    localStorage.removeItem("authorId");
-                    localStorage.removeItem("avatar");
+                    clearSession();
                     
                     window.location.reload();
                   }}

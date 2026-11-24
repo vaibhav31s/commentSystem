@@ -1,3 +1,4 @@
+import { authFetch } from "../services/auth";
 import React, { useState, useEffect } from "react";
 import Card from "./Comment/Card";
 import { toast } from "react-toastify";
@@ -79,7 +80,7 @@ const Comment = (blogs) => {
     }
     const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
 
-    await fetch(`${REACT_APP_BACKEND_URL}/create/reply`, {
+    await authFetch(`${REACT_APP_BACKEND_URL}/create/reply`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +98,7 @@ const Comment = (blogs) => {
       .then((res) => res.json())
       .then((data1) => {
         // console.log(data);
-        const lastKey = fetch(`${REACT_APP_BACKEND_URL}/reply/getlastkey`, {
+        const lastKey = authFetch(`${REACT_APP_BACKEND_URL}/reply/getlastkey`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -145,7 +146,7 @@ const Comment = (blogs) => {
     }
 
     if (blogs.id) {
-      const response = await fetch(`${REACT_APP_BACKEND_URL}/myvotes/blogid`, {
+      const response = await authFetch(`${REACT_APP_BACKEND_URL}/myvotes/blogid`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
