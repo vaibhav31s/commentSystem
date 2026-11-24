@@ -1,58 +1,22 @@
-FROM php:8.3-fpm-bookworm
-
-RUN apt-get update
+# Install PHP dependencies from composer.lock
+FROM composer:2 AS vendor
 WORKDIR /app
+COPY app/composer.json app/composer.lock ./
+RUN composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader
 
-RUN apt-get install -y --no-install-recommends \
-        libfreetype6-dev \
-        libicu-dev \
-        libjpeg-dev \
-        libmagickwand-dev \
-        libpng-dev \
-        libwebp-dev \
-        libzip-dev
-
-RUN docker-php-ext-install -j "$(nproc)" \ 
-        pdo \
-        pdo_mysql \
-        mysqli \
-        bcmath \
-        exif \
-        gd \
-        intl \
-        zip
-
-RUN docker-php-ext-configure gd \
-		--with-freetype \
-		--with-jpeg \
-		--with-webp
-
-    
-RUN set -eux; \
-	docker-php-ext-enable opcache; \
-	{ \
-		echo 'opcache.memory_consumption=128'; \
-		echo 'opcache.interned_strings_buffer=8'; \
-		echo 'opcache.max_accelerated_files=4000'; \
-		echo 'opcache.revalidate_freq=2'; \
-		echo 'opcache.fast_shutdown=1'; \
-	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
-
-RUN pecl install xdebug && docker-php-ext-enable xdebug
-
-RUN pecl install imagick-3.7.0 && docker-php-ext-enable imagick
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-# Set the working directory to /app
-
-
-
-
-COPY ./app /app
-
-RUN chmod +x /usr/local/bin/composer
-RUN cd /app && composer update
-
-
-RUN adduser vaibhav
-USER vaibhav
+FROM php:8.3-fpm-bookworm
+RUN docker-php-ext-install -j "$(nproc)" pdo_mysql \
+ && docker-php-ext-enable opcache \
+ && { \
+      echo 'opcache.memory_consumption=128'; \
+      echo 'opcache.interned_strings_buffer=8'; \
+      echo 'opcache.max_accelerated_files=4000'; \
+      echo 'opcache.revalidate_freq=2'; \
+    } > /usr/local/etc/php/conf.d/opcache-recommended.ini \
+ && { echo 'expose_php=Off'; echo 'display_errors=Off'; echo 'log_errors=On'; } > /usr/local/etc/php/conf.d/production.ini \
+ && echo 'clear_env = no' >> /usr/local/etc/php-fpm.d/www.conf
+WORKDIR /app
+COPY app/ /app/
+COPY --from=vendor /app/vendor /app/vendor
+USER www-data
 CMD ["php-fpm"]

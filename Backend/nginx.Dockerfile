@@ -1,4 +1,3 @@
-FROM nginx
+FROM nginx:1.27-alpine
 COPY default.conf /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY nginx.conf /etc/nginx/conf.d/nginx.conf
+COPY app/public /app/public

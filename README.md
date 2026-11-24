@@ -24,3 +24,7 @@ docker compose up
 `docker compose` reads `.env` and passes `DB_HOST`, `DB_NAME`, `DB_USER` and
 `DB_PASSWORD` to the PHP container (and the same credentials to MariaDB).
 The backend throws a clear error if `DB_PASSWORD` is not set.
+
+- The API listens on `127.0.0.1:8888` (put a reverse proxy such as Caddy in front for HTTPS).
+- MariaDB is only reachable from the host (`127.0.0.1:3325`); `Backend/schema.sql` creates the tables on first start.
+- `CORS_ORIGINS` lists the frontend origins allowed to call the API (localhost is always allowed).

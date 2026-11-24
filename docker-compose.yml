@@ -1,43 +1,47 @@
-version: '3'
 services:
-    web:
-        build:
-            context: Backend
-            dockerfile: nginx.Dockerfile
-        image: nginx:1.25.2-alpine3.18
-        ports:
-           - "8888:80"
-        volumes:
-            - ./Backend/app:/app
-        depends_on:
-            - php
-        restart: always
-    php:
-        build:
-            context: Backend
-            dockerfile: PHP.Dockerfile
-        volumes:
-            - ./Backend/app:/app
-        environment:
-            DB_HOST: mysql
-            DB_NAME: ${DB_NAME:-slimphp}
-            DB_USER: ${DB_USER:-vaibhav}
-            DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
-        depends_on:
-            - mysql
-        restart: always
-    mysql:
-        image: mariadb:11.1.2-jammy
-        environment:
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD must be set}
-            MYSQL_USER: ${DB_USER:-vaibhav}
-            MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
-            MYSQL_DATABASE: ${DB_NAME:-slimphp}
-        volumes:
-            - slimphp:/var/lib/mysql  # Corrected volume syntax
-        ports:
-            - "3325:3306"
-        restart: always
+  web:
+    build:
+      context: Backend
+      dockerfile: nginx.Dockerfile
+    ports:
+      - "127.0.0.1:8888:80"
+    depends_on:
+      - php
+    restart: unless-stopped
+
+  php:
+    build:
+      context: Backend
+      dockerfile: PHP.Dockerfile
+    environment:
+      DB_HOST: mysql
+      DB_NAME: ${DB_NAME:-slimphp}
+      DB_USER: ${DB_USER:-vaibhav}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mysql:
+    image: mariadb:11.4
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD must be set}
+      MARIADB_USER: ${DB_USER:-vaibhav}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
+      MARIADB_DATABASE: ${DB_NAME:-slimphp}
+    volumes:
+      - slimphp:/var/lib/mysql
+      - ./Backend/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    ports:
+      - "127.0.0.1:3325:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
 
 volumes:
-   slimphp: 
+  slimphp:
