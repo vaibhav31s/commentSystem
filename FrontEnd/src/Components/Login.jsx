@@ -3,7 +3,7 @@ import { FaGoogle, FaGithub } from "react-icons/fa";
 import axios from "axios";
 import fit from "./loginbanner.webp";
 import { toast } from "react-toastify";
-const { REACT_APP_BACKEND_URL } = process.env;
+const { REACT_APP_BACKEND_URL } = import.meta.env;
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

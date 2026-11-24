@@ -5,7 +5,7 @@ import Comments from "./Comment";
 import { useParams } from "react-router-dom";
 import { BsBookmarkCheckFill, BsBookmarkDash } from "react-icons/bs";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
-const  {REACT_APP_BACKEND_URL} = process.env
+const  {REACT_APP_BACKEND_URL} = import.meta.env
 const Blogs = (props) => {
   const { id } = useParams();
   // const id = router

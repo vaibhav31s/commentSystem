@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Card from "./Comment/Card";
 import { toast } from "react-toastify";
 
-const  {REACT_APP_BACKEND_URL} = process.env
+const  {REACT_APP_BACKEND_URL} = import.meta.env
 
 console.log("BACKEEND", REACT_APP_BACKEND_URL);
 const Comment = (blogs) => {

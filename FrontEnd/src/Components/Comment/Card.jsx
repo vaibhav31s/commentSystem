@@ -7,7 +7,7 @@ import {
 } from "react-icons/bi";
 import { toast } from "react-toastify";
 
-const  {REACT_APP_BACKEND_URL} = process.env
+const  {REACT_APP_BACKEND_URL} = import.meta.env
 
 const Card = ({ blog, level, myvotes, totalRepliesAtTop, setTotalRepliesAtTop, allVotesReply, isModerator} ) => {
 

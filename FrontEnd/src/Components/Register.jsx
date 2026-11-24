@@ -3,7 +3,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useState } from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 
-const { REACT_APP_BACKEND_URL } = process.env;
+const { REACT_APP_BACKEND_URL } = import.meta.env;
 const Register = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

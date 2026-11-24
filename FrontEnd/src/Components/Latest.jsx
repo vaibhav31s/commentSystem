@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 
 import Card from "./Card";
-const {REACT_APP_BACKEND_URL} = process.env
+const {REACT_APP_BACKEND_URL} = import.meta.env
 const Latest =  () => {
   const [latestBlogs, setPosts] = useState([]);
   useEffect(() => {

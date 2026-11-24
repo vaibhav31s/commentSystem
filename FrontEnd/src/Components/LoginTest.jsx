@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import axios from 'axios';
 const LoginTest = () => {
-    const { REACT_APP_BACKEND_URL } = process.env;
+    const { REACT_APP_BACKEND_URL } = import.meta.env;
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [data, setData] = useState(null);

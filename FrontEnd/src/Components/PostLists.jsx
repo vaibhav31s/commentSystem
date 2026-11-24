@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { useEffect, useState } from "react";
-const { REACT_APP_BACKEND_URL } = process.env;
+const { REACT_APP_BACKEND_URL } = import.meta.env;
 const PostLists = () => {
   // http://localhost:8888/blogs/
   const [posts, setPosts] = useState([]);

@@ -10,7 +10,8 @@ import Navbar from "./Components/Navbar";
 import Login from "./Components/Login";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Replies from "./Components/Replies";
+// Replies.jsx is entirely commented out (no default export), so its route is disabled
+// import Replies from "./Components/Replies";
 import Register from "./Components/Register";
 function App() {
   return (
@@ -42,7 +43,7 @@ function App() {
 
               <Route path="/blog/:id" element={<Blog />} />
 
-              <Route path="/replies/:id" element={<Replies />} />
+              {/* <Route path="/replies/:id" element={<Replies />} /> */}
 
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
