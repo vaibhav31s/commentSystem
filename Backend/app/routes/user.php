@@ -45,7 +45,15 @@ $app->post('/login', function (Request $request, Response $response, $args) {
 
 
     if (password_verify($password, $hashed)) {
-        $response->getBody()->write(json_encode(["Id" => $results[0]["Id"]] + ["Name" => $results[0]["Name"]] + ["Name" => $results[0]["Name"]] + ["avatar" => $results[0]["avatar"]]+["Email" => $email] + ["message" => "Login Successful!"]));
+        $user = $results[0];
+        $response->getBody()->write(json_encode([
+            "Id" => $user["Id"],
+            "Name" => $user["Name"],
+            "avatar" => $user["avatar"],
+            "Email" => $user["Email"],
+            "token" => issueAuthToken($user["Id"], $user["Name"]),
+            "message" => "Login Successful!",
+        ]));
         return $response->withHeader('Content-Type', 'application/json');
     }
 
@@ -124,10 +132,15 @@ $app->post('/register', function (Request $request, Response $response) {
 
 
     if ($results) {
-        $response->getBody()->write('
-        {
-            "message": "User Created Successfully!"
-        }');
+        $newId = $this->get('DB')->getConnection()->lastInsertId();
+        $response->getBody()->write(json_encode([
+            "message" => "User Created Successfully!",
+            "Id" => $newId,
+            "Name" => $name,
+            "avatar" => $avatar,
+            "Email" => $email,
+            "token" => issueAuthToken($newId, $name),
+        ]));
         return $response->withHeader('Content-Type', 'application/json');
     }
 

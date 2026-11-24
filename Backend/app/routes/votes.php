@@ -11,7 +11,7 @@ $app -> post('/reply/votes', function (Request $request, Response $response, $ar
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $replyId = $body['replyId'];
-    $authorId = $body['authorId'];
+    $authorId = $request->getAttribute('userId'); // from the login token
     $voteType = $body['voteType'];
     $blogId = $body['blogId'];
     $queryBuilder = $this->get('DB')->getQueryBuilder();    
@@ -84,7 +84,7 @@ $app -> post('/reply/votes', function (Request $request, Response $response, $ar
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
 
-});
+})->add($authMiddleware);
 
 $app->get('/reply/{id}/votes', function (Request $request, Response $response, $args) {
     $id = $args['id'];
@@ -115,7 +115,7 @@ $app->post('/vote/delete', function (Request $request, Response $response, $args
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $replyId = $body['replyId'];
-    $authorId = $body['authorId'];
+    $authorId = $request->getAttribute('userId'); // from the login token
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     $queryBuilder -> delete('Vote')
     -> where('replyId = ?')
@@ -137,13 +137,13 @@ $app->post('/vote/delete', function (Request $request, Response $response, $args
  
         return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
     }
-});
+})->add($authMiddleware);
 
 $app->post('/myvotes/blogid', function (Request $request, Response $response, $args) {
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $blogId = $body['blogId'];
-    $authorId = $body['authorId'];
+    $authorId = $request->getAttribute('userId'); // from the login token
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     $queryBuilder -> select('replyId, voteType')
     -> from('Vote')
@@ -157,4 +157,4 @@ $app->post('/myvotes/blogid', function (Request $request, Response $response, $a
     $results = $queryBuilder->executeQuery()->fetchAllAssociative();
     $response->getBody()->write(json_encode($results));
     return $response->withHeader('Content-Type', 'application/json');
-});
+})->add($authMiddleware);

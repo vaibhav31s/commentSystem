@@ -88,11 +88,12 @@ $app -> post('/create/reply', function (Request $request, Response $response, $a
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $reply = $body['reply'];
-    $replyId = $body['replyId'];
-    $authorName = $body['authorName'];
+    // parent reply id; null/empty means a top-level reply
+    $replyId = (isset($body['replyId']) && $body['replyId'] !== '') ? $body['replyId'] : null;
+    $authorName = $request->getAttribute('userName'); // from the login token
     $blogId = $body['blogId'];
     $timestamp = $body['timestamp'];
-    $authorId = $body['authorId'];
+    $authorId = $request->getAttribute('userId'); // from the login token
 
 
     $queryBuilder = $this->get('DB')->getQueryBuilder();
@@ -115,20 +116,23 @@ $app -> post('/create/reply', function (Request $request, Response $response, $a
     ;
     $results = $queryBuilder->executeStatement();
     if($results > 0){
-    $response->getBody()->write(json_encode("Created Successfully!"));
+    $response->getBody()->write(json_encode([
+        "message" => "Created Successfully!",
+        "id" => $this->get('DB')->getConnection()->lastInsertId(),
+    ]));
     return $response->withHeader('Content-Type', 'application/json');
     }
 
     return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
 
-});
+})->add($authMiddleware);
 
 $app->post('/reply/getlastkey', function (Request $request, Response $response) {
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $blogId = $body['blogId'];
     $timestamp = $body['timestamp'];
-    $authorId = $body['authorId'];
+    $authorId = $request->getAttribute('userId');
     $queryBuilder = $this->get('DB')->getQueryBuilder();
 
     $queryBuilder -> select('id')
@@ -144,13 +148,39 @@ $app->post('/reply/getlastkey', function (Request $request, Response $response) 
     $results = $queryBuilder->executeQuery()->fetchAllAssociative();
     $response->getBody()->write(json_encode($results));
     return $response->withHeader('Content-Type', 'application/json');
-});
+})->add($authMiddleware);
 
+/**
+ * Who may change a reply: its author can edit/delete it; the author of the
+ * blog post can also delete (moderate) replies on their post.
+ * Returns null if allowed, or an error response.
+ */
+function replyPermissionError($container, Request $request, Response $response, $replyId, bool $allowBlogOwner)
+{
+    $row = $container->get('DB')->getConnection()->fetchAssociative(
+        'SELECT r.authorId, b.authorId AS blogAuthorId FROM Replies r JOIN Blog b ON b.Id = r.blogId WHERE r.id = ?',
+        [$replyId]
+    );
+    if (!$row) {
+        return jsonResponse($response, ['message' => 'Reply not found'], 404);
+    }
+    $userId = (string) $request->getAttribute('userId');
+    if ((string) $row['authorId'] === $userId) {
+        return null;
+    }
+    if ($allowBlogOwner && (string) $row['blogAuthorId'] === $userId) {
+        return null;
+    }
+    return jsonResponse($response, ['error' => 'Forbidden', 'message' => 'You can only change your own replies.'], 403);
+}
 
 $app->post('/reply/delete', function (Request $request, Response $response) {
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $replyId = $body['replyId'];
+    if ($denied = replyPermissionError($this, $request, $response, $replyId, true)) {
+        return $denied;
+    }
 
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     
@@ -165,13 +195,16 @@ $app->post('/reply/delete', function (Request $request, Response $response) {
     $results = $queryBuilder->executeStatement();
     $response->getBody()->write(json_encode(["updated" => $results]));
     return $response->withHeader('Content-Type', 'application/json');
-});
+})->add($authMiddleware);
 
 $app->post('/reply/edit', function (Request $request, Response $response) {
     $jsonBody = $request->getBody();
     $body = json_decode($jsonBody, true);
     $replyId = $body['replyId'];
     $reply = $body['reply'];
+    if ($denied = replyPermissionError($this, $request, $response, $replyId, false)) {
+        return $denied;
+    }
 
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     
@@ -186,6 +219,6 @@ $app->post('/reply/edit', function (Request $request, Response $response) {
     $results = $queryBuilder->executeStatement();
     $response->getBody()->write(json_encode(["updated" => $results]));
     return $response->withHeader('Content-Type', 'application/json');
-});
+})->add($authMiddleware);
 
 

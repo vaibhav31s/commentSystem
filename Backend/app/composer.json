@@ -6,6 +6,7 @@
         "php-di/php-di": "^7",
         "tuupola/cors-middleware": "^1.5",
         "phpnexus/cors-psr7": "^0.2.4",
-        "slim/http": "^1.4"
+        "slim/http": "^1.4",
+        "firebase/php-jwt": "^7"
     }
 }

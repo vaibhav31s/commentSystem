@@ -12,10 +12,10 @@ require_once __DIR__ . '/../middlewares/jsonBodyParser.php';
 $app -> post('/createComment', function(Request $request, Response $response) {
     $jsonBody = $request->getBody();
     $data = json_decode($jsonBody, true);
-    $authorId = $data['authorId'];
+    $authorId = $request->getAttribute('userId'); // from the login token
     $blogId = $data['blogId'];
     $comment = $data['comment'];
-    $name = $data['authorName'];
+    $name = $request->getAttribute('userName');
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     $date = date("Y-m-d H:i:s");
     $queryBuilder -> insert('Comment')
@@ -44,7 +44,7 @@ $app -> post('/createComment', function(Request $request, Response $response) {
     }
     $response->getBody()->write(json_encode("There is problem in creating comment!"));
     return $response->withHeader('Content-Type', 'application/json');
-}) -> add($jsonBodyParser);
+}) -> add($jsonBodyParser) -> add($authMiddleware);
 
 $app -> get('/blog/{id}/comments', function(Request $request, Response $response, array $args) {
     $id = $args['id'];

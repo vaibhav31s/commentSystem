@@ -3,7 +3,6 @@
 use Doctrine\DBAL\DriverManager  as DriverManager;
 
 class DB {
-    private $qb;
     private $conn;
     private $connectionParams;
 
@@ -13,10 +12,14 @@ class DB {
         $this->conn = DriverManager::getConnection
         ($this->connectionParams);
         
-        $this->qb = $this->conn->createQueryBuilder();
     }
+    /** A fresh query builder per call, so one route's query can't leak into another's. */
     public function getQueryBuilder() {
-        return $this->qb;
+        return $this->conn->createQueryBuilder();
+    }
+
+    public function getConnection() {
+        return $this->conn;
     }
     
     

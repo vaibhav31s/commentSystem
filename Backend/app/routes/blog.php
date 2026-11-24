@@ -16,7 +16,7 @@ $app -> post('/createPost', function(Request $request, Response $response) {
     $data = json_decode($jsonBody, true);
     $title = $data['title']; 
     $description = $data['description'];
-    $userId = $data['userId'];
+    $userId = $request->getAttribute('userId'); // from the login token, never the body
     $tags = $data['tags'];
     $queryBuilder = $this->get('DB')->getQueryBuilder();
     $date = date("Y-m-d H:i:s");
@@ -54,7 +54,7 @@ $app -> post('/createPost', function(Request $request, Response $response) {
      
     $response->getBody()->write(json_encode("There is problem in creating post!"));
     return $response->withHeader('Content-Type', 'application/json');
-}) -> add($jsonBodyParser);
+}) -> add($jsonBodyParser) -> add($authMiddleware);
 
 $app -> get('/blogs', function(Request $request, Response $response) {
     $queryBuilder = $this->get('DB')->getQueryBuilder();
