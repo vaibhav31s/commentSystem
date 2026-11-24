@@ -132,7 +132,7 @@ $app->post('/vote/delete', function (Request $request, Response $response, $args
     } else {
         $response->getBody()->write('
         {
-            "message": "There is problem in deleting vote! Possible that there is no vote with this reply!""
+            "message": "There is problem in deleting vote! Possible that there is no vote with this reply!"
         }');
  
         return $response->withHeader('Content-Type', 'application/json')->withStatus(500);

@@ -113,7 +113,7 @@ $app -> post('/create/reply', function (Request $request, Response $response, $a
     ->setParameter(4, $timestamp)
     ->setParameter(5, $authorId)
     ;
-    $results = $queryBuilder->execute();
+    $results = $queryBuilder->executeStatement();
     if($results > 0){
     $response->getBody()->write(json_encode("Created Successfully!"));
     return $response->withHeader('Content-Type', 'application/json');
@@ -158,12 +158,12 @@ $app->post('/reply/delete', function (Request $request, Response $response) {
     update('Replies')
     ->set('reply', '?')
     ->where('id = ?')
-    ->setParameter(1, 'This reply has been deleted')
-    ->setParameter(2, $replyId);
+    ->setParameter(0, 'This reply has been deleted')
+    ->setParameter(1, $replyId);
 
     
-    $results = $queryBuilder->executeQuery()->fetchAllAssociative();
-    $response->getBody()->write(json_encode($results));
+    $results = $queryBuilder->executeStatement();
+    $response->getBody()->write(json_encode(["updated" => $results]));
     return $response->withHeader('Content-Type', 'application/json');
 });
 
@@ -179,12 +179,12 @@ $app->post('/reply/edit', function (Request $request, Response $response) {
     update('Replies')
     ->set('reply', '?')
     ->where('id = ?')
-    ->setParameter(1, $reply)
-    ->setParameter(2, $replyId);
+    ->setParameter(0, $reply)
+    ->setParameter(1, $replyId);
 
     
-    $results = $queryBuilder->executeQuery()->fetchAllAssociative();
-    $response->getBody()->write(json_encode($results));
+    $results = $queryBuilder->executeStatement();
+    $response->getBody()->write(json_encode(["updated" => $results]));
     return $response->withHeader('Content-Type', 'application/json');
 });
 

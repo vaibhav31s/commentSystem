@@ -27,7 +27,7 @@ $app->get('/moderatorcheck/{id}', function (Request $request, Response $response
 $queryBuilder-> select('(replyId)')
 ->from('Replies')
 ->distinct()
-->where( 'replyId  IN (SELECT replyId FROM Vote WHERE voteType = "up")  AND authorId != ?  ')
+->where( 'replyId  IN (SELECT replyId FROM Vote WHERE voteType = \'up\')  AND authorId != ?  ')
 ->setParameter('0', $authorId);
 // $result = $queryBuilder->execute()->fetchAllAssociative();
 

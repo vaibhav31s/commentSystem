@@ -139,7 +139,8 @@ $app->post('/register', function (Request $request, Response $response) {
 
 $app->get('/users', function (Request $request, Response $response) {
     $queryBuilder = $this->get('DB')->getQueryBuilder();
-    $queryBuilder->select('*')
+    // Never expose password hashes or emails
+    $queryBuilder->select('Id', 'Name', 'avatar')
         ->from('Users');
 
 
