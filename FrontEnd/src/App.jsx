@@ -15,9 +15,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Register from "./Components/Register";
 function App() {
   return (
-    <html lang="en">
-      <div className="max-w-screen mx-auto">
-        <body className="wrapper flex flex-col dark:bg-[#05091a]">
+    <div className="max-w-screen mx-auto">
+        <div className="wrapper flex flex-col min-h-screen dark:bg-[#05091a]">
           <div className="fixed w-screen bg-white dark:bg-[#05091a] z-10">
           <ToastContainer
           position="bottom-center"
@@ -49,9 +48,8 @@ function App() {
               <Route path="/register" element={<Register />} />
             </Routes>
           </div>{" "}
-        </body>
-      </div>
-    </html>
+        </div>
+    </div>
   );
 }
 
